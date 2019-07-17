@@ -51,7 +51,6 @@ void RunTopSummer2019(const TString in_fname,
   //CORRECTIONS: L1-prefire 
   L1PrefireEfficiencyWrapper l1PrefireWR(in_fname.Contains("Data13TeV"),era);
   
-  //Leonora = the best joepie
   //CORRECTIONS: B-TAG CALIBRATION
   BTagSFUtil btvSF(era,BTagEntry::OperatingPoint::OP_MEDIUM,"",0);
 
