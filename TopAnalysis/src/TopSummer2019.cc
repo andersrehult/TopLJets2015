@@ -149,6 +149,8 @@ void RunTopSummer2019(const TString in_fname,
 
       ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
 
+      //calculate invariant mass of the system
+
       //lepton-b systems
       for(size_t ij=0; ij<allJets.size(); ij++) 
         {
