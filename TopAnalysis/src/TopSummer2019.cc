@@ -64,9 +64,6 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("nvtx",         new TH1F("nvtx",        ";Vertex multiplicity;Events",4,0,100));
   ht.addHist("mlb",          new TH1F("mlb",         ";m(l,b) [GeV];Events",20,0,250)); 
   ht.addHist("nprotons",     new TH1F("nprotons",    ";Proton multiplicity; Events",6,0,6) );
-  ht.addHist("nprotons_low_nvtx", new TH1F("nprotons_low_nvtx", ";Proton multiplicity; Events",6,0,6));
-  ht.addHist("nprotons_high_nvtx", new TH1F("nprotons_high_nvtx", ";Proton multiplicity; Events",6,0,6));
-  ht.addHist("nprotons_very_low_nvtx", new TH1F("nprotons_very_low_nvtx", ";Proton multiplicity; Events",6,0,6));
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   int i=0;
@@ -165,11 +162,8 @@ void RunTopSummer2019(const TString in_fname,
 
       //roman pots
       int nprotons23(0), nprotons123(0);
-      int nprotons23_low_nvtx(0), nprotons23_high_nvtx(0);
-      int nprotons123_low_nvtx(0), nprotons123_high_nvtx(0);
-      int nprotons23_very_low_nvtx(0), nprotons123_very_low_nvtx(0);
-      double nvtx_mean(27); //not currently the mean of nvtx. Improve later.
-      int very_low_nvtx_cutoff(10);
+      //double nvtx_mean(27); //not currently the mean of nvtx. Improve later.
+      int v_low_cutoff(25);
 
       for (int ift=0; ift<ev.nfwdtrk; ift++) {
 
@@ -183,31 +177,13 @@ void RunTopSummer2019(const TString in_fname,
         nprotons23 += (pot_raw_id==23);
         nprotons123 += (pot_raw_id==123);
 
-	if (ev.nvtx < nvtx_mean) {
-	  nprotons23_low_nvtx += (pot_raw_id==23);
-	  nprotons123_low_nvtx += (pot_raw_id==123);
-	}
-	else {
-	  nprotons23_high_nvtx += (pot_raw_id==23);
-	  nprotons123_high_nvtx += (pot_raw_id==123);
-	}
-	if (ev.nvtx <= very_low_nvtx_cutoff) {
-	nprotons23_very_low_nvtx += (pot_raw_id==23);
-	nprotons123_very_low_nvtx += (pot_raw_id==123);
-	}
-
         float xi=ev.fwdtrk_xi[ift];
-        std::vector<TString> tags={"inc",Form("rp%d",pot_raw_id)};
-        ht.fill("csi",xi,evWgt,tags);
+        std::vector<TString> tags={"inc",ev.nvtx<v_low_cutoff ? "v_low" : "not_v_low"};
+	ht.fill("csi",xi,evWgt,tags);
       }
       ht.fill("nprotons",nprotons23+nprotons123,evWgt,"inc");
       ht.fill("nprotons",nprotons23,            evWgt,"rp23");
       ht.fill("nprotons",nprotons123,           evWgt,"rp123");
-      
-      ht.fill("nprotons_low_nvtx",nprotons23_low_nvtx+nprotons123_low_nvtx,evWgt,"inc");
-      ht.fill("nprotons_high_nvtx",nprotons23_high_nvtx+nprotons123_high_nvtx,evWgt,"inc");
-      
-      ht.fill("nprotons_very_low_nvtx",nprotons23_very_low_nvtx,evWgt,"inc");
     }
   
   //close input file
