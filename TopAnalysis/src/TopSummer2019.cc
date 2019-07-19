@@ -73,7 +73,7 @@ void RunTopSummer2019(const TString in_fname,
   ht.setNsyst(0);
   ht.addHist("nvtx",         new TH1F("nvtx",        ";Vertex multiplicity;Events",4,0,100));
   ht.addHist("mlb",          new TH1F("mlb",         ";m(l,b) [GeV];Events",20,0,250));
-  ht.addHist("mlnjets",      new TH1F("mlnjets",     ";m(l,neutrino,jets) [GeV];Events",20,0,250)); //invariant mass of lepton, neutrino, and jets
+  ht.addHist("mlnjets",      new TH1F("mlnjets",     ";m(l,neutrino,jets) [GeV];Events",40,0,2500)); //invariant mass of lepton, neutrino, and jets
   ht.addHist("nprotons",     new TH1F("nprotons",    ";Proton multiplicity; Events",6,0,6) );
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           "x [cm]; Events",50,0,25));
@@ -162,11 +162,15 @@ void RunTopSummer2019(const TString in_fname,
       ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
 
       //calculate invariant mass of the system
-      float mlnjets(leptons[0].M()+met.M()); //longitudinal momentum of neutrino not included as of yet
+      TLorentzVector lvjets(leptons[0]+met); //longitudinal momentum of neutrino not included as of yet
       for(size_t ij=0; ij<allJets.size(); ij++)
 	{
-	  mlnjets+=allJets[ij].M();
+	  lvjets+=allJets[ij];
 	}
+      float mlnjets(lvjets.M());
+
+      //float mlnjets((leptons[0]+met+allJets[0]+allJets[1]+allJets[2]+allJets[3]).M());
+
       ht.fill("mlnjets",mlnjets,evWgt,"invariant mass");
 
       //lepton-b systems
