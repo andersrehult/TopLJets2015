@@ -139,7 +139,7 @@ void RunTopSummer2019(const TString in_fname,
       TLorentzVector mlm(0,0,0,0);
       mlm.SetPxPyPzE(0,0,-leptons[0].Pz(),0);
 
-      //me = missing energy (neutrino energy)
+      //me = missing energy (neutrino energy-momentum 4vector)
       TLorentzVector me = met + mlm; 
 
       //event weight
