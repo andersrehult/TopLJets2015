@@ -72,7 +72,8 @@ void RunTopSummer2019(const TString in_fname,
   HistTool ht;
   ht.setNsyst(0);
   ht.addHist("nvtx",         new TH1F("nvtx",        ";Vertex multiplicity;Events",50,0,100));
-  ht.addHist("mlb",          new TH1F("mlb",         ";m(l,b) [GeV];Events",20,0,250)); 
+  ht.addHist("mlb",          new TH1F("mlb",         ";m(l,b) [GeV];Events",20,0,250));
+  ht.addHist("mlnjets",      new TH1F("mlnjets",     ";m(l,neutrino,jets) [GeV];Events",20,0,250)); //invariant mass of lepton, neutrino, and jets
   ht.addHist("nprotons",     new TH1F("nprotons",    ";Proton multiplicity; Events",6,0,6) );
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
@@ -82,7 +83,6 @@ void RunTopSummer2019(const TString in_fname,
     i++;
     ht.getPlots()["ratevsrun"]->GetXaxis()->SetBinLabel(i,Form("%d",key.first));
   }
-
 
   //INPUT
   MiniEvent_t ev;
@@ -166,6 +166,14 @@ void RunTopSummer2019(const TString in_fname,
 
       ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
 
+      //calculate invariant mass of the system
+      float mlnjets(leptons[0].M()+met.M()); //longitudinal momentum of neutrino not included as of yet
+      for(size_t ij=0; ij<allJets.size(); ij++)
+	{
+	  mlnjets+=allJets[ij].M();
+	}
+      ht.fill("mlnjets",mlnjets,evWgt,"invariant mass");
+      
       //lepton-b systems
       for(size_t ij=0; ij<allJets.size(); ij++) 
         {
@@ -181,6 +189,7 @@ void RunTopSummer2019(const TString in_fname,
       //roman pots
       int nprotons23(0), nprotons123(0);
       int ntrks( isLowPUrun ? ev.nppstrk : ev.nfwdtrk );
+      int v_low_cutoff(25); //change to mean of nvtx.
       for (int ift=0; ift<ntrks; ift++) {
 
         //single pot reconstruction
@@ -192,10 +201,10 @@ void RunTopSummer2019(const TString in_fname,
           
         nprotons23 += (pot_raw_id==23);
         nprotons123 += (pot_raw_id==123);
-        std::vector<TString> tags={"inc",Form("rp%d",pot_raw_id)};
 
         float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
         float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
+	std::vector<TString> tags={"inc",ev.nvtx<v_low_cutoff ? "v_low" : "not_v_low"};
 
         ht.fill("csi",     xi,                    evWgt,tags);
         ht.fill("x",       x,                     evWgt,tags);
