@@ -222,6 +222,37 @@ void RunTopSummer2019(const TString in_fname,
         ht.fill("nprotons",nprotons123,           evWgt,"rp123");
       }
  
+      //proton energy loss 
+      float mass(0);
+      float nrp23(0);
+      float nrp123(0);
+      for (int ift=0; ift<ntrks; ift++) {
+        //only near (pixels) detectors
+	const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
+
+	nrp23 += (pot_raw_id==23);
+	nrp123 += (pot_raw_id==123);
+
+      }
+
+      if (nrp23!=1) continue;
+      if (nrp123!=1) continue;
+
+      for (int ift=0; ift<ntrks; ift++) {
+
+        //only near (pixels) detectors
+        const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
+        
+	float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
+        float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
+	  
+      //TLorentzVector pel=(0,0,0,0);
+      //pel.
+
+      //}
+
     }
   
   //close input file
