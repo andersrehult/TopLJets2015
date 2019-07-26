@@ -79,6 +79,7 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
+  
   int i=0;
   for(auto key : lumiPerRun) {
     i++;
@@ -106,6 +107,7 @@ void RunTopSummer2019(const TString in_fname,
   
   //EVENT LOOP
   //select mu+>=4 jets events triggered by a single muon trigger
+  //Double_t mlnjets_vect[0], lost_proton_energy_vect[0];
   std::vector<float> mlnjets_vect = {};
   std::vector<float> lost_proton_energy_vect = {};
   for (Int_t iev=0;iev<nentries;iev++)
@@ -274,6 +276,10 @@ void RunTopSummer2019(const TString in_fname,
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
       lost_proton_energy_vect.push_back(lost_proton_energy);
     }
+
+  TGraph* match_proton_tt = new TGraph(mlnjets_vect.size(),&mlnjets_vect[0],&lost_proton_energy_vect[0]);
+  match_proton_tt->Draw();
+
   //close input file
   f->Close();
   
