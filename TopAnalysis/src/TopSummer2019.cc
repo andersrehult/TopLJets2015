@@ -106,6 +106,8 @@ void RunTopSummer2019(const TString in_fname,
   
   //EVENT LOOP
   //select mu+>=4 jets events triggered by a single muon trigger
+  std::vector<float> mlnjets_vect = {};
+  std::vector<float> lost_proton_energy_vect = {};
   for (Int_t iev=0;iev<nentries;iev++)
     {
       t->GetEntry(iev);
@@ -242,6 +244,8 @@ void RunTopSummer2019(const TString in_fname,
       //select events where one proton is captured by each RP
       if (nrp23!=1) continue;
       if (nrp123!=1) continue;
+      //save CM energy for surviving events
+      mlnjets_vect.push_back(mlnjets);
       
       //store xi for each RP
       float xi_23(0);
@@ -257,6 +261,7 @@ void RunTopSummer2019(const TString in_fname,
 	if (pot_raw_id==123) {
 	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
 	}
+
 	//float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
         //float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. )
 	  
@@ -265,11 +270,10 @@ void RunTopSummer2019(const TString in_fname,
 
       }
       //calculate proton energy according to P.Meiring's Eq. (9)
-      //assuming 13 TeV collisions and that GeV is the appropriate unit
-      float proton_energy = sqrt(13*1000*xi_23*xi_123);
-      cout << proton_energy << endl;
+      //assuming 13 TeV collisions. Unit: TeV
+      float lost_proton_energy = sqrt(13*xi_23*xi_123);
+      lost_proton_energy_vect.push_back(lost_proton_energy);
     }
-  
   //close input file
   f->Close();
   
