@@ -218,9 +218,9 @@ void RunTopSummer2019(const TString in_fname,
 
         ht.fill("csi",     xi,                    evWgt,tags);
         ht.fill("x",       x,                     evWgt,tags);
-        ht.fill("nprotons",nprotons23+nprotons123,evWgt,"inc");
-        ht.fill("nprotons",nprotons23,            evWgt,"rp23");
-        ht.fill("nprotons",nprotons123,           evWgt,"rp123");
+        ht.fill("nprotons",nprotons23+nprotons123,evWgt,tags);
+        ht.fill("nprotons",nprotons23,            evWgt,tags);
+	ht.fill("nprotons",nprotons123,           evWgt,tags);
       }
  
       //proton energy loss 
