@@ -17,6 +17,7 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
+#include <cmath>
 
 #include "TMath.h"
 
@@ -223,11 +224,11 @@ void RunTopSummer2019(const TString in_fname,
       }
  
       //proton energy loss 
-      float mass(0);
+      // float mass(0); //replaced by proton_energy further down
       float nrp23(0);
       float nrp123(0);
       //loop over forward trackers to store the number of protons in the
-      //two RP:s we're considering (can be done in an earlier loop)
+      //two RP:s we're considering (TODO: do this in an earlier loop)
       for (int ift=0; ift<ntrks; ift++) {
         //only near (pixels) detectors
 	const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
@@ -243,20 +244,30 @@ void RunTopSummer2019(const TString in_fname,
       if (nrp123!=1) continue;
       
       //store xi for each RP
+      float xi_23(0);
+      float xi_123(0);
       for (int ift=0; ift<ntrks; ift++) {
 
         //only near (pixels) detectors
         const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
         if (pot_raw_id!=23 && pot_raw_id!=123) continue;
-        
-	float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
-        float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
+	if (pot_raw_id==23) {
+	  xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+	}
+	if (pot_raw_id==123) {
+	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+	}
+	//float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
+        //float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. )
 	  
       //TLorentzVector pel=(0,0,0,0);
       //pel.
 
       }
-
+      //calculate proton energy according to P.Meiring's Eq. (9)
+      //assuming 13 TeV collisions and that GeV is the appropriate unit
+      float proton_energy = sqrt(13*1000*xi_23*xi_123);
+      cout << proton_energy << endl;
     }
   
   //close input file
