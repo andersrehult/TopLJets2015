@@ -226,6 +226,8 @@ void RunTopSummer2019(const TString in_fname,
       float mass(0);
       float nrp23(0);
       float nrp123(0);
+      //loop over forward trackers to store the number of protons in the
+      //two RP:s we're considering (can be done in an earlier loop)
       for (int ift=0; ift<ntrks; ift++) {
         //only near (pixels) detectors
 	const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
@@ -235,10 +237,12 @@ void RunTopSummer2019(const TString in_fname,
 	nrp123 += (pot_raw_id==123);
 
       }
-
+      
+      //select events where one proton is captured by each RP
       if (nrp23!=1) continue;
       if (nrp123!=1) continue;
-
+      
+      //store xi for each RP
       for (int ift=0; ift<ntrks; ift++) {
 
         //only near (pixels) detectors
@@ -251,7 +255,7 @@ void RunTopSummer2019(const TString in_fname,
       //TLorentzVector pel=(0,0,0,0);
       //pel.
 
-      //}
+      }
 
     }
   
