@@ -82,7 +82,7 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
-  ht.addHist("match_protons_tt", new TH2F("match_protons_tt", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5));
+  TH2F* protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5);
   
   int i=0;
   for(auto key : lumiPerRun) {
@@ -109,11 +109,11 @@ void RunTopSummer2019(const TString in_fname,
   //EVENT SELECTION WRAPPER (GETS LISTS OF PHYSICS OBJECTS FROM THE INPUT)
   SelectionTool selector(in_fname, false, triggerList);
   
+  //CM energy of leptons + jet system
+  float mlnjets(0);
+
   //EVENT LOOP
-  //select mu+>=4 jets events triggered by a single muon trigger
-  //Double_t mlnjets_vect[0], lost_proton_energy_vect[0];
-  std::vector<float> mlnjets_vect = {};
-  std::vector<float> lost_proton_energy_vect = {};
+  //select mu+>=4 jets events triggered by a single muon trigger 
   for (Int_t iev=0;iev<nentries;iev++)
     {
       t->GetEntry(iev);
@@ -184,7 +184,6 @@ void RunTopSummer2019(const TString in_fname,
 
       //calculate invariant mass of the system
       TLorentzVector lnjets = leptons[0]+me;
-      float mlnjets(0);
       for(size_t ij=0; ij<allJets.size(); ij++)
 	{
 	  lnjets+=allJets[ij];
@@ -244,56 +243,51 @@ void RunTopSummer2019(const TString in_fname,
 	ht.fill("npdiff1", npdiff1,               evWgt,tags);
       }
  
-      //proton energy loss 
-      //float mass(0); //replaced by proton_energy further down
-      //float nrp23(0);
-      //float nrp123(0);
+      //proton energy loss
+      float nrp23(0);
+      float nrp123(0);
       //loop over forward trackers to store the number of protons in the
       //two RP:s we're considering (TODO: do this in an earlier loop)
-      //for (int ift=0; ift<ntrks; ift++) {
+      for (int ift=0; ift<ntrks; ift++) {
         //only near (pixels) detectors
-	  //const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
-        //if (pot_raw_id!=23 && pot_raw_id!=123) continue;
+	  const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
 
-	//nrp23 += (pot_raw_id==23);
-	//nrp123 += (pot_raw_id==123);
+	nrp23 += (pot_raw_id==23);
+	nrp123 += (pot_raw_id==123);
 
-      //}
+      }
       
       //select events where one proton is captured by each RP
-      //if (nrp23!=1) continue;
-      //if (nrp123!=1) continue;
-      //save CM energy for surviving events
-      //mlnjets_vect.push_back(mlnjets);
+      if (nrp23!=1) continue;
+      if (nrp123!=1) continue;
       
       //store xi for each RP
-      //float xi_23(0);
-      //float xi_123(0);
-      //for (int ift=0; ift<ntrks; ift++) {
+      float xi_23(0);
+      float xi_123(0);
+      for (int ift=0; ift<ntrks; ift++) {
 
         //only near (pixels) detectors
-        //const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
-        //if (pot_raw_id!=23 && pot_raw_id!=123) continue;
-	//if (pot_raw_id==23) {
-	  //xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-	  //}
-	//if (pot_raw_id==123) {
-	//xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-        //}
-
-      //float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
-      //float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. )
-
-	//}
+        const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
+	if (pot_raw_id==23) {
+	  xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+	  }
+	if (pot_raw_id==123) {
+	xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+        }
+	
+      }
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
-      //float lost_proton_energy = sqrt(13*xi_23*xi_123);
-      //lost_proton_energy_vect.push_back(lost_proton_energy);
-      //ht.fill("match_protons_tt",mlnjets_vect,lost_proton_energy_vect,evWgt,evWgt, "inc", "inc");
-      }
+      float lost_proton_energy = sqrt(13*xi_23*xi_123);
+      //fill 2D hist. Convert mlnjets to TeV
+      protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
+    }
 
-	     //TGraph* match_proton_tt = new TGraph(mlnjets_vect.size(),&mlnjets_vect[0],&lost_proton_energy_vect[0]);
-	     //match_proton_tt->Draw();
+  TFile out_protons_vs_CM_energy("protons_vs_CM_energy.root","RECREATE");
+  protons_vs_CM_energy->Write();
+  out_protons_vs_CM_energy.Close();
 
   //close input file
   f->Close();
