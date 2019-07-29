@@ -83,7 +83,9 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   TH2F* protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5);
-  
+  protons_vs_CM_energy->SetMarkerStyle(kOpenCircle);
+  protons_vs_CM_energy->SetMarkerColor(9);
+
   int i=0;
   for(auto key : lumiPerRun) {
     i++;
