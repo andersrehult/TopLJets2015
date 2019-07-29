@@ -79,6 +79,7 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
+  ht.addHist("match_protons_tt", new TH2F("match_protons_tt", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5));
   
   int i=0;
   for(auto key : lumiPerRun) {
@@ -275,10 +276,11 @@ void RunTopSummer2019(const TString in_fname,
       //assuming 13 TeV collisions. Unit: TeV
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
       lost_proton_energy_vect.push_back(lost_proton_energy);
+      ht.fill("match_protons_tt",mlnjets_vect,lost_proton_energy_vect,evWgt,evWgt, "inc", "inc");
     }
 
-  TGraph* match_proton_tt = new TGraph(mlnjets_vect.size(),&mlnjets_vect[0],&lost_proton_energy_vect[0]);
-  match_proton_tt->Draw();
+	     //TGraph* match_proton_tt = new TGraph(mlnjets_vect.size(),&mlnjets_vect[0],&lost_proton_energy_vect[0]);
+	     //match_proton_tt->Draw();
 
   //close input file
   f->Close();
