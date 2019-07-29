@@ -76,10 +76,11 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("mlb",          new TH1F("mlb",         ";m(l,b) [GeV];Events",20,0,250));
   ht.addHist("mlnjets",      new TH1F("mlnjets",     ";m(l,neutrino,jets) [GeV];Events",30,0,2500)); //invariant mass of lepton, neutrino, and jets
   ht.addHist("nprotons",     new TH1F("nprotons",    ";Proton multiplicity; Events",6,0,6) );
+  ht.addHist("nprotons_new", new TH1F("nprotons_new",    ";Proton multiplicity; Events",6,0,6) );
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
-  ht.addHist("match_protons_tt", new TH2F("match_protons_tt", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5));
+  //ht.addHist("match_protons_tt", new TH2F("match_protons_tt", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5));
   
   int i=0;
   for(auto key : lumiPerRun) {
@@ -203,6 +204,7 @@ void RunTopSummer2019(const TString in_fname,
 
       //roman pots
       int nprotons23(0), nprotons123(0);
+      int nprotons03(0), nprotons103(0);
       int ntrks( isLowPUrun ? ev.nppstrk : ev.nfwdtrk );
       int v_low_cutoff(25); //change to mean of nvtx.
       for (int ift=0; ift<ntrks; ift++) {
@@ -212,10 +214,12 @@ void RunTopSummer2019(const TString in_fname,
 
         //only near (pixels) detectors
         const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
-        if (pot_raw_id!=23 && pot_raw_id!=123) continue;            
+        if (pot_raw_id!=23 && pot_raw_id!=123 && pot_raw_id!=03 && pot_raw_id!=103) continue;            
           
         nprotons23 += (pot_raw_id==23);
         nprotons123 += (pot_raw_id==123);
+        nprotons03 += (pot_raw_id==03);
+        nprotons103 += (pot_raw_id==103);
 
         float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
         float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
@@ -226,16 +230,19 @@ void RunTopSummer2019(const TString in_fname,
         ht.fill("nprotons",nprotons23+nprotons123,evWgt,tags);
         ht.fill("nprotons",nprotons23,            evWgt,tags);
 	ht.fill("nprotons",nprotons123,           evWgt,tags);
+        ht.fill("nprotons_new",nprotons03+nprotons103,evWgt,tags);
+        ht.fill("nprotons_new",nprotons03,            evWgt,tags);
+	ht.fill("nprotons_new",nprotons103,           evWgt,tags);
       }
  
       //proton energy loss 
-      // float mass(0); //replaced by proton_energy further down
+      float mass(0); //replaced by proton_energy further down
       float nrp23(0);
       float nrp123(0);
       //loop over forward trackers to store the number of protons in the
       //two RP:s we're considering (TODO: do this in an earlier loop)
       for (int ift=0; ift<ntrks; ift++) {
-        //only near (pixels) detectors
+        only near (pixels) detectors
 	const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
         if (pot_raw_id!=23 && pot_raw_id!=123) continue;
 
@@ -261,23 +268,20 @@ void RunTopSummer2019(const TString in_fname,
 	if (pot_raw_id==23) {
 	  xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
 	}
-	if (pot_raw_id==123) {
-	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-	}
+      if (pot_raw_id==123) {
+	xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+        }
 
-	//float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
-        //float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. )
-	  
-      //TLorentzVector pel=(0,0,0,0);
-      //pel.
+      float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
+      float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. )
 
-      }
+	//}
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
       lost_proton_energy_vect.push_back(lost_proton_energy);
       ht.fill("match_protons_tt",mlnjets_vect,lost_proton_energy_vect,evWgt,evWgt, "inc", "inc");
-    }
+      }
 
 	     //TGraph* match_proton_tt = new TGraph(mlnjets_vect.size(),&mlnjets_vect[0],&lost_proton_energy_vect[0]);
 	     //match_proton_tt->Draw();
