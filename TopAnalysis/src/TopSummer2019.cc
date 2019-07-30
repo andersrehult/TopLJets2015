@@ -82,9 +82,20 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
-  TH2F* protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "CoM_energy;Proton_loss_energy", 50,0,0.5,50,0,0.5);
+  TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1,50,0,1);
   protons_vs_CM_energy->SetMarkerStyle(kOpenCircle);
   protons_vs_CM_energy->SetMarkerColor(9);
+  const Int_t XBINS = 5; const Int_t YBINS = 5;
+  Double_t x_linear [XBINS + 1] = {0, 0.2, 0.4, 0.6, 0.8, 1};
+  Double_t y_linear [YBINS + 1] = {0, 0.2, 0.4, 0.6, 0.8, 1};
+  TH2F *linear_line = new TH2F("linear_line", "linear_line", XBINS, x_linear, YBINS, y_linear);
+  //linear_line->Fill(x_linear,y_linear);
+
+  //Float_t energy_CoM,proton_loss;
+  //for (Int_t i=0;i<100000;i++){
+  //energy_CoM = gRandom->Rndm();
+  //proton_loss = 10*gRandom->Rndm();
+  //if (cut->IsInside(energy_CoM,proton_loss)) linear_line->Fill(energy_CoM,proton_loss);
 
   int i=0;
   for(auto key : lumiPerRun) {
@@ -286,9 +297,11 @@ void RunTopSummer2019(const TString in_fname,
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
-
+  
   TFile out_protons_vs_CM_energy("protons_vs_CM_energy.root","RECREATE");
+  //protons_vs_CM_energy->Fit(&linear_line);
   protons_vs_CM_energy->Write();
+  linear_line->Write();
   out_protons_vs_CM_energy.Close();
 
   //close input file
