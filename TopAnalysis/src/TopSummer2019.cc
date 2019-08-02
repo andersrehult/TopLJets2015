@@ -82,6 +82,8 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
+  ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
+
   TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,2,50,0,2);
   protons_vs_CM_energy->SetMarkerStyle(kOpenCircle);
   protons_vs_CM_energy->SetMarkerColor(9);
@@ -294,9 +296,12 @@ void RunTopSummer2019(const TString in_fname,
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
+      //fill 1D difference hist. Convert mlnjets to TeV
+      ht.fill("CM_minus_lost", mlnjets/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
+
   
   TFile out_protons_vs_CM_energy("protons_vs_CM_energy.root","RECREATE");
   //protons_vs_CM_energy->Fit(&linear_line);
