@@ -4,6 +4,7 @@
 #include <TH2.h>
 #include <TSystem.h>
 #include <TGraph.h>
+#include <TCanvas.h>
 #include <TLorentzVector.h>
 #include <TGraphAsymmErrors.h>
 
@@ -84,20 +85,17 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
 
-  TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,2,50,0,2);
-  protons_vs_CM_energy->SetMarkerStyle(kOpenCircle);
+  TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
+  protons_vs_CM_energy->SetMarkerStyle(kMultiply);
   protons_vs_CM_energy->SetMarkerColor(9);
-  const Int_t XBINS = 5; const Int_t YBINS = 5;
-  Double_t x_linear [XBINS + 1] = {0, 0.2, 0.4, 0.6, 0.8, 1};
-  Double_t y_linear [YBINS + 1] = {0, 0.2, 0.4, 0.6, 0.8, 1};
-  TH2F *linear_line = new TH2F("linear_line", "linear_line", XBINS, x_linear, YBINS, y_linear);
-  //linear_line->Fill(x_linear,y_linear);
 
-  //Float_t energy_CoM,proton_loss;
-  //for (Int_t i=0;i<100000;i++){
-  //energy_CoM = gRandom->Rndm();
-  //proton_loss = 10*gRandom->Rndm();
-  //if (cut->IsInside(energy_CoM,proton_loss)) linear_line->Fill(energy_CoM,proton_loss);
+  Double_t x[100], y[100];
+  Int_t n = 24;
+  for (Int_t i=0;i<n;i++){
+    x[i] = i*0.05;
+    y[i] = i*0.05;
+  }
+  TGraph *linear_line = new TGraph(n,x,y);
 
   int i=0;
   for(auto key : lumiPerRun) {
@@ -302,11 +300,11 @@ void RunTopSummer2019(const TString in_fname,
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
 
-  
+  auto output_1 = new TCanvas("protons_vs_CM_energy.root");
+  protons_vs_CM_energy->Draw();
+  linear_line->Draw("Same");  
   TFile out_protons_vs_CM_energy("protons_vs_CM_energy.root","RECREATE");
-  //protons_vs_CM_energy->Fit(&linear_line);
-  protons_vs_CM_energy->Write();
-  linear_line->Write();
+  output_1->Write();
   out_protons_vs_CM_energy.Close();
 
   //close input file
