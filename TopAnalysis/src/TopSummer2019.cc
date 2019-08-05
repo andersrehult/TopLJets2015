@@ -84,6 +84,7 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_no_neutrino", new TH1F("CM_minus_lost_no_neutrino",";difference [TeV]; Events",50,-1,1));
 
   TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy->SetMarkerStyle(kMultiply);
@@ -197,10 +198,13 @@ void RunTopSummer2019(const TString in_fname,
 
       //calculate invariant mass of the system
       TLorentzVector lnjets = leptons[0]+me;
+      //prepare variable for no neutrino plot
+      float mlnjets_no_neutrino(0);
       for(size_t ij=0; ij<allJets.size(); ij++)
 	{
 	  lnjets+=allJets[ij];
 	  mlnjets = lnjets.M();
+	  mlnjets_no_neutrino = (lnjets-me).M();
 	}
       ht.fill("mlnjets",mlnjets,evWgt,"invariant_mass");
       
@@ -296,6 +300,7 @@ void RunTopSummer2019(const TString in_fname,
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
       //fill 1D difference hist. Convert mlnjets to TeV
       ht.fill("CM_minus_lost", mlnjets/1000 - lost_proton_energy, 1, "");
+      ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
