@@ -85,10 +85,15 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_no_neutrino", new TH1F("CM_minus_lost_no_neutrino",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_bg", new TH1F("CM_energy_minus_lost_proton_energy_bg",";difference [TeV]; Events",50,-1,1));
 
   TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy->SetMarkerStyle(kMultiply);
   protons_vs_CM_energy->SetMarkerColor(9);
+  
+  TH2F *protons_vs_CM_energy_bg = new TH2F("protons_vs_CM_energy_bg", "protons_vs_CM_energy_bg;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
+  protons_vs_CM_energy_bg->SetMarkerStyle(kMultiply);
+  protons_vs_CM_energy_bg->SetMarkerColor(8);
 
   Double_t x[100], y[100];
   Int_t n = 24;
@@ -125,6 +130,9 @@ void RunTopSummer2019(const TString in_fname,
   
   //CM energy of leptons + jet system
   float mlnjets(0);
+  std::vector<float> mlnjets_vect{};
+
+  std::vector<float> lost_proton_energy_vect{};
 
   //EVENT LOOP
   //select mu+>=4 jets events triggered by a single muon trigger 
@@ -207,7 +215,8 @@ void RunTopSummer2019(const TString in_fname,
 	  mlnjets_no_neutrino = (lnjets-me).M();
 	}
       ht.fill("mlnjets",mlnjets,evWgt,"invariant_mass");
-      
+      mlnjets_vect.push_back(mlnjets);
+
       //lepton-b systems
       for(size_t ij=0; ij<allJets.size(); ij++) 
         {
@@ -298,6 +307,7 @@ void RunTopSummer2019(const TString in_fname,
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
+      lost_proton_energy_vect.push_back(lost_proton_energy);
       //fill 1D difference hist. Convert mlnjets to TeV
       ht.fill("CM_minus_lost", mlnjets/1000 - lost_proton_energy, 1, "");
       ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
@@ -305,12 +315,27 @@ void RunTopSummer2019(const TString in_fname,
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
 
+  //randomize mlnjets_vect
+  std::random_shuffle(mlnjets_vect.begin(), mlnjets_vect.end());
+  for (size_t i=0; i<lost_proton_energy_vect.size(); i++) {
+    ht.fill("CM_minus_lost_bg", mlnjets_vect[i]/1000-lost_proton_energy_vect[i],1,"");
+    protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, lost_proton_energy_vect[i]);
+  }
+
+  //Write 2D hists to file
   auto output_1 = new TCanvas("protons_vs_CM_energy.root");
   protons_vs_CM_energy->Draw();
   linear_line->Draw("Same");  
   TFile out_protons_vs_CM_energy("protons_vs_CM_energy.root","RECREATE");
   output_1->Write();
   out_protons_vs_CM_energy.Close();
+
+  auto output_2 = new TCanvas("protons_vs_CM_energy_bg.root");
+  protons_vs_CM_energy_bg->Draw();
+  linear_line->Draw("Same");
+  TFile out_protons_vs_CM_energy_bg("protons_vs_CM_energy_bg.root","RECREATE");
+  output_2->Write();
+  out_protons_vs_CM_energy_bg.Close();
 
   //close input file
   f->Close();
