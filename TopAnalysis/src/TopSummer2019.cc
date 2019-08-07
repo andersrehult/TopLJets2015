@@ -86,6 +86,7 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_no_neutrino", new TH1F("CM_minus_lost_no_neutrino",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_bg", new TH1F("CM_energy_minus_lost_proton_energy_bg",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("signal_minus_bg", new TH1F("signal_minus_background",";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",50,-1,1));
 
   TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy->SetMarkerStyle(kMultiply);
@@ -128,10 +129,11 @@ void RunTopSummer2019(const TString in_fname,
   //EVENT SELECTION WRAPPER (GETS LISTS OF PHYSICS OBJECTS FROM THE INPUT)
   SelectionTool selector(in_fname, false, triggerList);
   
+
+  //declare variables
   //CM energy of leptons + jet system
   float mlnjets(0);
   std::vector<float> mlnjets_vect{};
-
   std::vector<float> lost_proton_energy_vect{};
 
   //EVENT LOOP
@@ -308,19 +310,28 @@ void RunTopSummer2019(const TString in_fname,
       //assuming 13 TeV collisions. Unit: TeV
       float lost_proton_energy = sqrt(13*xi_23*xi_123);
       lost_proton_energy_vect.push_back(lost_proton_energy);
-      //fill 1D difference hist. Convert mlnjets to TeV
+      //fill 1D difference hists. Convert mlnjets to TeV
       ht.fill("CM_minus_lost", mlnjets/1000 - lost_proton_energy, 1, "");
+      ht.fill("signal_minus_bg", mlnjets/1000 - lost_proton_energy, 1, "");
       ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
 
-  //randomize mlnjets_vect
+  //Randomize mlnjets_vect, match random CM energies to lost proton energies to
+  //simulate background
   std::random_shuffle(mlnjets_vect.begin(), mlnjets_vect.end());
   for (size_t i=0; i<lost_proton_energy_vect.size(); i++) {
-    ht.fill("CM_minus_lost_bg", mlnjets_vect[i]/1000-lost_proton_energy_vect[i],1,"");
+    //fill 1D difference hist. Convert mlnjets to TeV
+    ht.fill("CM_minus_lost_bg", mlnjets_vect[i]/1000 - lost_proton_energy_vect[i],1,"");
+    //fill 2D hist. Convert mlnjets to TeV
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, lost_proton_energy_vect[i]);
   }
+  //Subtract background from signal. We need to either access an 'add' function in histtool
+  //or manually extract out the number of events in each bin and subtract
+  //events(bg) from events(signal).
+  //ht.add("signal_minus_bg", "CM_minus_lost_bg", -1);
+
 
   //Write 2D hists to file
   auto output_1 = new TCanvas("protons_vs_CM_energy.root");
