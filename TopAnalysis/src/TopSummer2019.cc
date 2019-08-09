@@ -86,9 +86,19 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_no_neutrino", new TH1F("CM_minus_lost_no_neutrino",";difference [TeV]; Events",50,-1,1));
   //ht.addHist("CM_minus_lost_bg", new TH1F("CM_energy_minus_lost_proton_energy_bg",";difference [TeV]; Events",50,-1,1));
+
+  //sliced in different energy levels
+  ht.addHist("CM_minus_lost_under06TeV", new TH1F("CM_minus_lost_under06TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_above06TeV", new TH1F("CM_minus_lost_above06TeV",";difference [TeV]; Events",50,-1,1));
   
   TH1F *CM_minus_lost_bg = new TH1F("CM_minus_lost_bg",";difference [TeV]; Events",50,-1,1);
   TH1F *signal_minus_bg = new TH1F("signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",50,-1,1);
+
+  TH1F *CM_minus_lost_bg_under06TeV = new TH1F("CM_minus_lost_bg_under06TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_above06TeV = new TH1F("CM_minus_lost_bg_above06TeV",";difference [TeV]; Events",50,-1,1);
+
+  //TH1F *slices_CM_minus_lost_bg = new TH1F("slices_CM_minus_lost_bg",";difference [TeV]; Events",10,-1,1);
+  //TH1F *slices_signal_minus_bg = new TH1F("slices_signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",10,-1,1);
 
   TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy->SetMarkerStyle(kMultiply);
@@ -314,6 +324,12 @@ void RunTopSummer2019(const TString in_fname,
       lost_proton_energy_vect.push_back(lost_proton_energy);
       //fill 1D difference hists. Convert mlnjets to TeV
       ht.fill("CM_minus_lost", mlnjets/1000 - lost_proton_energy, 1, "");
+      if (mlnjets/1000<0.6){
+	ht.fill("CM_minus_lost_under06TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+      }
+      else {
+	ht.fill("CM_minus_lost_under06TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+      }
       signal_minus_bg->Fill(mlnjets/1000 - lost_proton_energy);
       ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
@@ -325,16 +341,26 @@ void RunTopSummer2019(const TString in_fname,
   std::random_shuffle(mlnjets_vect.begin(), mlnjets_vect.end());
   for (size_t i=0; i<lost_proton_energy_vect.size(); i++) {
     //fill 1D difference hist. Convert mlnjets to TeV
-    CM_minus_lost_bg->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i]);
+    CM_minus_lost_bg->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     //ht.fill("CM_minus_lost_bg", mlnjets_vect[i]/1000 - lost_proton_energy_vect[i],1,"");
     //fill 2D hist. Convert mlnjets to TeV
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, lost_proton_energy_vect[i]);
   }
+  for (size_t i=0; i<nr_under06; i++) {
+    if (mlnjets/1000<0.6){
+      CM_minus_lost_bg_under06TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+    }
+  }
+  for (size_t i=0; i<nr_above06; i++) {
+    if (mlnjets/1000>0.6){
+      CM_minus_lost_bg_above06TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+    }
+  }  
 
-signal_minus_bg->Add(CM_minus_lost_bg, -1);
-ht.addHist("signal_minus_bg", signal_minus_bg);
+  signal_minus_bg->Add(CM_minus_lost_bg, -1);
+  ht.addHist("signal_minus_bg", signal_minus_bg);
 
-ht.addHist("CM_minus_lost_bg", CM_minus_lost_bg);
+  ht.addHist("CM_minus_lost_bg", CM_minus_lost_bg);
 
   //Write 2D hists to file
   auto output_1 = new TCanvas("protons_vs_CM_energy.root");
