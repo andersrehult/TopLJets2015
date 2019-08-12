@@ -389,6 +389,7 @@ void RunTopSummer2019(const TString in_fname,
   cout << nevents_02_04_TeV << endl;
   cout << mlnjets/1000 << endl;
   //fill bg slices
+  //TODO: CHANGE MLNJETS TO ELEMENTS IN MLNJETS_VECT
   for (size_t i=0; i<nevents_00_02_TeV; i++) {
     if (0.0 <= mlnjets/1000 && mlnjets/1000 < 0.2){
       CM_minus_lost_bg_00_02_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
