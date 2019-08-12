@@ -85,7 +85,8 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_no_neutrino", new TH1F("CM_minus_lost_no_neutrino",";difference [TeV]; Events",50,-1,1));
-  //ht.addHist("CM_minus_lost_bg", new TH1F("CM_energy_minus_lost_proton_energy_bg",";difference [TeV]; Events",50,-1,1));
+
+  ht.addHist("test_2dhist", new TH2F("test_2dhist", "x;y", 50, 0, 1.2, 50, 0, 1.2));  
 
   //sliced in different energy levels
   ht.addHist("CM_minus_lost_00_02_TeV", new TH1F("CM_minus_lost_00_02_TeV",";difference [TeV]; Events",50,-1,1));
@@ -159,6 +160,7 @@ void RunTopSummer2019(const TString in_fname,
   std::vector<float> mlnjets_vect{};
   //energy lost by protons
   std::vector<float> lost_proton_energy_vect{};
+  std::vector<float> rand_proton_energy_vect{};
   //# of events with CM energy in various ranges
   size_t nevents_00_02_TeV(0);
   size_t nevents_02_04_TeV(0);
@@ -166,6 +168,73 @@ void RunTopSummer2019(const TString in_fname,
   size_t nevents_06_08_TeV(0);
   size_t nevents_08_10_TeV(0);
   size_t nevents_10_12_TeV(0);
+
+  //Random protons vector
+  for (Int_t iev=0;iev<nentries;iev++)
+    {
+      //roman pots
+      int nprotons23(0), nprotons123(0);
+      int nprotons03(0), nprotons103(0);
+      int ntrks( isLowPUrun ? ev.nppstrk : ev.nfwdtrk );
+      for (int ift=0; ift<ntrks; ift++) {
+
+        //single pot reconstruction
+        if(!isLowPUrun && ev.fwdtrk_method[ift]!=0) continue;
+
+        //only near (pixels) detectors
+        const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123 && pot_raw_id!=03 && pot_raw_id!=103) continue;            
+        //count nr of protons in each pot  
+        nprotons23 += (pot_raw_id==23);
+        nprotons123 += (pot_raw_id==123);
+        nprotons03 += (pot_raw_id==03);
+        nprotons103 += (pot_raw_id==103);
+
+        float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
+        float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
+      }
+ 
+      //proton energy loss
+      float nrp23(0);
+      float nrp123(0);
+      //loop over forward trackers to store the number of protons in the
+      //two RP:s we're considering (TODO: do this in an earlier loop)
+      for (int ift=0; ift<ntrks; ift++) {
+        //only near (pixels) detectors
+	  const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
+
+	nrp23 += (pot_raw_id==23);
+	nrp123 += (pot_raw_id==123);
+
+      }
+      
+      //select events where one proton is captured by each RP
+      if (nrp23!=1) continue;
+      if (nrp123!=1) continue;
+      
+      //store xi for each RP
+      float xi_23(0);
+      float xi_123(0);
+      for (int ift=0; ift<ntrks; ift++) {
+
+        //only near (pixels) detectors
+        const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
+	if (pot_raw_id==23) {
+	  xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+	  }
+	if (pot_raw_id==123) {
+	xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+        }
+	
+      }
+      //calculate proton energy according to P.Meiring's Eq. (9)
+      //assuming 13 TeV collisions. Unit: TeV
+      float rand_proton_energy = sqrt(13*xi_23*xi_123);
+      rand_proton_energy_vect.push_back(rand_proton_energy);
+
+      }
 
   //EVENT LOOP
   //select mu+>=4 jets events triggered by a single muon trigger 
@@ -276,7 +345,7 @@ void RunTopSummer2019(const TString in_fname,
         //only near (pixels) detectors
         const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
         if (pot_raw_id!=23 && pot_raw_id!=123 && pot_raw_id!=03 && pot_raw_id!=103) continue;            
-          
+        //count nr of protons in each pot  
         nprotons23 += (pot_raw_id==23);
         nprotons123 += (pot_raw_id==123);
         nprotons03 += (pot_raw_id==03);
@@ -290,6 +359,7 @@ void RunTopSummer2019(const TString in_fname,
         float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
 	std::vector<TString> tags={"inc",ev.nvtx<v_low_cutoff ? "v_low" : "not_v_low"};
 
+	//fill proton histograms
         ht.fill("csi",     xi,                    evWgt,tags);
         ht.fill("x",       x,                     evWgt,tags);
         ht.fill("nprotons",nprotons23+nprotons123,evWgt,tags);
@@ -373,21 +443,22 @@ void RunTopSummer2019(const TString in_fname,
       ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
+      //test2d histo histtool
+      ht.fill("test_2dhist", mlnjets/1000, lost_proton_energy);
     }
 
   //Randomize mlnjets_vect, match random CM energies to lost proton energies to
   //simulate background
   std::random_shuffle(mlnjets_vect.begin(), mlnjets_vect.end());
-  for (size_t i=0; i<lost_proton_energy_vect.size(); i++) {
+  for (size_t i=0; i<rand_proton_energy_vect.size(); i++) {
     //fill 1D difference hist. Convert mlnjets to TeV
-    CM_minus_lost_bg->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
-    //ht.fill("CM_minus_lost_bg", mlnjets_vect[i]/1000 - lost_proton_energy_vect[i],1,"");
+    CM_minus_lost_bg->Fill(mlnjets_vect[i]/1000 - rand_proton_energy_vect[i], 1);
+    //ht.fill("CM_minus_lost_bg", mlnjets_vect[i]/1000 - rand_proton_energy_vect[i],1,"");
     //fill 2D hist. Convert mlnjets to TeV
-    protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, lost_proton_energy_vect[i]);
+    protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, rand_proton_energy_vect[i]);
   }
-  cout << nevents_00_02_TeV << endl;
-  cout << nevents_02_04_TeV << endl;
-  cout << mlnjets/1000 << endl;
+  //protons_vs_CM_energy_bg->Scale(mlnjets_vect.size()/lost_proton_energy_vect.size());
+
   //fill bg slices
   //TODO: CHANGE MLNJETS TO ELEMENTS IN MLNJETS_VECT
   for (size_t i=0; i<nevents_00_02_TeV; i++) {
@@ -454,4 +525,7 @@ void RunTopSummer2019(const TString in_fname,
     it.second->SetDirectory(fOut); it.second->Write(); 
   }  
   fOut->Close();
+
+  cout << rand_proton_energy_vect.size() << endl;
+  cout << mlnjets_vect.size() << endl;
 }
