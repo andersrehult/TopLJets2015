@@ -88,14 +88,25 @@ void RunTopSummer2019(const TString in_fname,
   //ht.addHist("CM_minus_lost_bg", new TH1F("CM_energy_minus_lost_proton_energy_bg",";difference [TeV]; Events",50,-1,1));
 
   //sliced in different energy levels
-  ht.addHist("CM_minus_lost_under06TeV", new TH1F("CM_minus_lost_under06TeV",";difference [TeV]; Events",50,-1,1));
-  ht.addHist("CM_minus_lost_above06TeV", new TH1F("CM_minus_lost_above06TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_00_02_TeV", new TH1F("CM_minus_lost_00_02_TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_02_04_TeV", new TH1F("CM_minus_lost_02_04_TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_04_06_TeV", new TH1F("CM_minus_lost_04_06_TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_06_08_TeV", new TH1F("CM_minus_lost_06_08_TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_08_10_TeV", new TH1F("CM_minus_lost_08_10_TeV",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("CM_minus_lost_10_12_TeV", new TH1F("CM_minus_lost_10_12_TeV",";difference [TeV]; Events",50,-1,1));
+
   
   TH1F *CM_minus_lost_bg = new TH1F("CM_minus_lost_bg",";difference [TeV]; Events",50,-1,1);
   TH1F *signal_minus_bg = new TH1F("signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",50,-1,1);
 
-  TH1F *CM_minus_lost_bg_under06TeV = new TH1F("CM_minus_lost_bg_under06TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *CM_minus_lost_bg_above06TeV = new TH1F("CM_minus_lost_bg_above06TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_00_02_TeV = new TH1F("CM_minus_lost_bg_00_02_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_02_04_TeV = new TH1F("CM_minus_lost_bg_02_04_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_04_06_TeV = new TH1F("CM_minus_lost_bg_04_06_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_06_08_TeV = new TH1F("CM_minus_lost_bg_06_08_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_08_10_TeV = new TH1F("CM_minus_lost_bg_08_10_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *CM_minus_lost_bg_10_12_TeV = new TH1F("CM_minus_lost_bg_10_12_TeV",";difference [TeV]; Events",50,-1,1);
+
+
 
   //TH1F *slices_CM_minus_lost_bg = new TH1F("slices_CM_minus_lost_bg",";difference [TeV]; Events",10,-1,1);
   //TH1F *slices_signal_minus_bg = new TH1F("slices_signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",10,-1,1);
@@ -146,7 +157,15 @@ void RunTopSummer2019(const TString in_fname,
   //CM energy of leptons + jet system
   float mlnjets(0);
   std::vector<float> mlnjets_vect{};
+  //energy lost by protons
   std::vector<float> lost_proton_energy_vect{};
+  //# of events with CM energy in various ranges
+  size_t nevents_00_02_TeV(0);
+  size_t nevents_02_04_TeV(0);
+  size_t nevents_04_06_TeV(0);
+  size_t nevents_06_08_TeV(0);
+  size_t nevents_08_10_TeV(0);
+  size_t nevents_10_12_TeV(0);
 
   //EVENT LOOP
   //select mu+>=4 jets events triggered by a single muon trigger 
@@ -324,12 +343,32 @@ void RunTopSummer2019(const TString in_fname,
       lost_proton_energy_vect.push_back(lost_proton_energy);
       //fill 1D difference hists. Convert mlnjets to TeV
       ht.fill("CM_minus_lost", mlnjets/1000 - lost_proton_energy, 1, "");
-      if (mlnjets/1000<0.6){
-	ht.fill("CM_minus_lost_under06TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+      //fill slices
+      if (0.0 <= mlnjets/1000 && mlnjets/1000 < 0.2){
+	ht.fill("CM_minus_lost_00_02_TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+	nevents_00_02_TeV++;
       }
-      else {
-	ht.fill("CM_minus_lost_under06TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+      else if (0.2 <= mlnjets/1000 && mlnjets/1000 < 0.4) {
+	ht.fill("CM_minus_lost_02_04_TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+	nevents_02_04_TeV++;
       }
+      else if (0.4 <= mlnjets/1000 && mlnjets/1000 < 0.6) {
+	ht.fill("CM_minus_lost_04_06_TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+	nevents_04_06_TeV++;
+      }
+      else if (0.6 <= mlnjets/1000 && mlnjets/1000 < 0.8) {
+	ht.fill("CM_minus_lost_06_08_TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+	nevents_06_08_TeV++;
+      }
+      else if (0.8 <= mlnjets/1000 && mlnjets/1000 < 1.0) {
+	ht.fill("CM_minus_lost_08_10_TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+	nevents_08_10_TeV++;
+      }
+      else if (1.0 <= mlnjets/1000 && mlnjets/1000 < 1.2) {
+	ht.fill("CM_minus_lost_10_12_TeV", mlnjets/1000 - lost_proton_energy, 1, "");
+	nevents_10_12_TeV++;
+      }
+
       signal_minus_bg->Fill(mlnjets/1000 - lost_proton_energy);
       ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
@@ -346,17 +385,40 @@ void RunTopSummer2019(const TString in_fname,
     //fill 2D hist. Convert mlnjets to TeV
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, lost_proton_energy_vect[i]);
   }
-  for (size_t i=0; i<nr_under06; i++) {
-    if (mlnjets/1000<0.6){
-      CM_minus_lost_bg_under06TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+  cout << nevents_00_02_TeV << endl;
+  cout << nevents_02_04_TeV << endl;
+  cout << mlnjets/1000 << endl;
+  //fill bg slices
+  for (size_t i=0; i<nevents_00_02_TeV; i++) {
+    if (0.0 <= mlnjets/1000 && mlnjets/1000 < 0.2){
+      CM_minus_lost_bg_00_02_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
-  for (size_t i=0; i<nr_above06; i++) {
-    if (mlnjets/1000>0.6){
-      CM_minus_lost_bg_above06TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+  for (size_t i=0; i<nevents_02_04_TeV; i++) {
+    if (0.2 <= mlnjets/1000 && mlnjets/1000 < 0.4){
+      CM_minus_lost_bg_02_04_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
-  }  
-
+  }
+  for (size_t i=0; i<nevents_04_06_TeV; i++) {
+    if (0.4 <= mlnjets/1000 && mlnjets/1000 < 0.6){
+      CM_minus_lost_bg_04_06_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+    }
+  }
+  for (size_t i=0; i<nevents_06_08_TeV; i++) {
+    if (0.6 <= mlnjets/1000 && mlnjets/1000 < 0.8){
+      CM_minus_lost_bg_06_08_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+    }
+  }
+  for (size_t i=0; i<nevents_08_10_TeV; i++) {
+    if (0.8<= mlnjets/1000 && mlnjets/1000 < 1.0){
+      CM_minus_lost_bg_08_10_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+    }
+  }
+  for (size_t i=0; i<nevents_10_12_TeV; i++) {
+    if (1.0 <= mlnjets/1000 && mlnjets/1000 < 1.2){
+      CM_minus_lost_bg_10_12_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+    }
+  }
   signal_minus_bg->Add(CM_minus_lost_bg, -1);
   ht.addHist("signal_minus_bg", signal_minus_bg);
 
