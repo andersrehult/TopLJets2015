@@ -172,6 +172,9 @@ void RunTopSummer2019(const TString in_fname,
   //Random protons vector
   for (Int_t iev=0;iev<nentries;iev++)
     {
+      t->GetEntry(iev);
+      //if(iev%1000==0) { printf("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries); fflush(stdout); }
+
       //roman pots
       int nprotons23(0), nprotons123(0);
       int nprotons03(0), nprotons103(0);
@@ -198,31 +201,30 @@ void RunTopSummer2019(const TString in_fname,
       //two RP:s we're considering (TODO: do this in an earlier loop)
       for (int ift=0; ift<ntrks; ift++) {
         //only near (pixels) detectors
-	  const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
+	const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
         if (pot_raw_id!=23 && pot_raw_id!=123) continue;
-
+	
 	nrp23 += (pot_raw_id==23);
 	nrp123 += (pot_raw_id==123);
-
+	
       }
       
       //select events where one proton is captured by each RP
       if (nrp23!=1) continue;
       if (nrp123!=1) continue;
-      
       //store xi for each RP
       float xi_23(0);
       float xi_123(0);
       for (int ift=0; ift<ntrks; ift++) {
-
+	
         //only near (pixels) detectors
         const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
         if (pot_raw_id!=23 && pot_raw_id!=123) continue;
 	if (pot_raw_id==23) {
 	  xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-	  }
+	}
 	if (pot_raw_id==123) {
-	xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
+	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
         }
 	
       }
@@ -230,8 +232,8 @@ void RunTopSummer2019(const TString in_fname,
       //assuming 13 TeV collisions. Unit: TeV
       float rand_proton_energy = sqrt(13*xi_23*xi_123);
       rand_proton_energy_vect.push_back(rand_proton_energy);
-
-      }
+      
+    }
 
   //EVENT LOOP
   //select mu+>=4 jets events triggered by a single muon trigger 
@@ -239,7 +241,7 @@ void RunTopSummer2019(const TString in_fname,
     {
       t->GetEntry(iev);
       if(iev%1000==0) { printf("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries); fflush(stdout); }
-
+      
       //trigger
       bool hasMTrigger(false);
       if(era.Contains("2016")) hasMTrigger=(selector.hasTriggerBit("HLT_IsoMu24_v", ev.triggerBits) );     
