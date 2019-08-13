@@ -461,32 +461,32 @@ void RunTopSummer2019(const TString in_fname,
   //fill bg slices
   //TODO: CHANGE MLNJETS TO ELEMENTS IN MLNJETS_VECT
   for (size_t i=0; i<nevents_00_02_TeV; i++) {
-    if (0.0 <= mlnjets/1000 && mlnjets/1000 < 0.2){
+    if (0.0 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 0.2){
       CM_minus_lost_bg_00_02_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
   for (size_t i=0; i<nevents_02_04_TeV; i++) {
-    if (0.2 <= mlnjets/1000 && mlnjets/1000 < 0.4){
+    if (0.2 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 0.4){
       CM_minus_lost_bg_02_04_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
   for (size_t i=0; i<nevents_04_06_TeV; i++) {
-    if (0.4 <= mlnjets/1000 && mlnjets/1000 < 0.6){
+    if (0.4 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 0.6){
       CM_minus_lost_bg_04_06_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
   for (size_t i=0; i<nevents_06_08_TeV; i++) {
-    if (0.6 <= mlnjets/1000 && mlnjets/1000 < 0.8){
+    if (0.6 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 0.8){
       CM_minus_lost_bg_06_08_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
   for (size_t i=0; i<nevents_08_10_TeV; i++) {
-    if (0.8<= mlnjets/1000 && mlnjets/1000 < 1.0){
+    if (0.8<= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 1.0){
       CM_minus_lost_bg_08_10_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
   for (size_t i=0; i<nevents_10_12_TeV; i++) {
-    if (1.0 <= mlnjets/1000 && mlnjets/1000 < 1.2){
+    if (1.0 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 1.2){
       CM_minus_lost_bg_10_12_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
     }
   }
