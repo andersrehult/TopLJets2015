@@ -189,9 +189,6 @@ void RunTopSummer2019(const TString in_fname,
         nprotons123 += (pot_raw_id==123);
         nprotons03 += (pot_raw_id==03);
         nprotons103 += (pot_raw_id==103);
-
-        float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
-        float x=  (isLowPUrun ? ev.ppstrk_x[ift] :  0. );
       }
  
       //proton energy loss
@@ -492,9 +489,12 @@ void RunTopSummer2019(const TString in_fname,
     }
   }
   signal_minus_bg->Add(CM_minus_lost_bg, -1);
-  ht.addHist("signal_minus_bg", signal_minus_bg);
 
+  //Add hists to histtool
+  ht.addHist("signal_minus_bg", signal_minus_bg);
   ht.addHist("CM_minus_lost_bg", CM_minus_lost_bg);
+  ht.addHist("protons_vs_CM_energy", protons_vs_CM_energy);
+  ht.addHist("protons_vs_CM_energy_bg", protons_vs_CM_energy_bg);
 
   //Write 2D hists to file
   auto output_1 = new TCanvas("protons_vs_CM_energy.root");
