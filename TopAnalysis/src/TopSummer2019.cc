@@ -106,6 +106,7 @@ void RunTopSummer2019(const TString in_fname,
   TH1F *Ecentral_minus_Eprotons_bg_08_10_TeV = new TH1F("Ecentral_minus_Eprotons_bg_08_10_TeV",";difference [TeV]; Events",50,-1,1);
   TH1F *Ecentral_minus_Eprotons_bg_10_12_TeV = new TH1F("Ecentral_minus_Eprotons_bg_10_12_TeV",";difference [TeV]; Events",50,-1,1);
 
+  //TH1F *signal_00_02_TeV = new TH1F("signal_00_02_TeV",
 
   TH2F *protons_vs_CM_energy = new TH2F("Eprotons_vs_Ecentral", "Eprotons_vs_Ecentral;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy->SetMarkerStyle(kMultiply);
