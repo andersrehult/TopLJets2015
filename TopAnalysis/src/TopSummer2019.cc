@@ -442,7 +442,7 @@ void RunTopSummer2019(const TString in_fname,
   //Randomize mlnjets_vect, match random CM energies to lost proton energies to
   //simulate background
   std::random_shuffle(mlnjets_vect.begin(), mlnjets_vect.end());
-  for (size_t i=0; i<rand_proton_energy_vect.size(); i++) {
+  for (size_t i=0; i<mlnjets_vect.size(); i++) {
     //fill 1D difference hist. Convert mlnjets to TeV
     Ecentral_minus_Eprotons_bg->Fill(mlnjets_vect[i]/1000 - rand_proton_energy_vect[i], 1);
     //ht.fill("Ecentral_minus_Eprotons_bg", mlnjets_vect[i]/1000 - rand_proton_energy_vect[i],1,"");
@@ -454,32 +454,32 @@ void RunTopSummer2019(const TString in_fname,
   //fill bg slices
   for (size_t i=0; i<nevents_00_02_TeV; i++) {
     if (0.0 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 0.2){
-      Ecentral_minus_Eprotons_bg_00_02_TeV->Fill(mlnjets_vect[i]/1000 - lost_proton_energy_vect[i], 1);
+      Ecentral_minus_Eprotons_bg_00_02_TeV->Fill(mlnjets_vect[i]/1000 - rand_proton_energy_vect[i], 1);
     }
   }
   for (size_t i=0; i<nevents_02_04_TeV; i++) {
     if (0.2 <= mlnjets_vect[i+nevents_00_02_TeV]/1000 && mlnjets_vect[i+nevents_00_02_TeV]/1000 < 0.4){
-      Ecentral_minus_Eprotons_bg_02_04_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV]/1000 - lost_proton_energy_vect[i+nevents_00_02_TeV], 1);
+      Ecentral_minus_Eprotons_bg_02_04_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV]/1000 - rand_proton_energy_vect[i+nevents_00_02_TeV], 1);
     }
   }
   for (size_t i=0; i<nevents_04_06_TeV; i++) {
     if (0.4 <= mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV]/1000 && mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV]/1000 < 0.6){
-      Ecentral_minus_Eprotons_bg_04_06_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV]/1000 - lost_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV], 1);
+      Ecentral_minus_Eprotons_bg_04_06_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV]/1000 - rand_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV], 1);
     }
   }
   for (size_t i=0; i<nevents_06_08_TeV; i++) {
     if (0.6 <= mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV]/1000 && mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV]/1000 < 0.8){
-      Ecentral_minus_Eprotons_bg_06_08_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV]/1000 - lost_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV], 1);
+      Ecentral_minus_Eprotons_bg_06_08_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV]/1000 - rand_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV], 1);
     }
   }
   for (size_t i=0; i<nevents_08_10_TeV; i++) {
     if (0.8<= mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV]/1000 && mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV]/1000 < 1.0){
-      Ecentral_minus_Eprotons_bg_08_10_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV]/1000 - lost_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV], 1);
+      Ecentral_minus_Eprotons_bg_08_10_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV]/1000 - rand_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV], 1);
     }
   }
   for (size_t i=0; i<nevents_10_12_TeV; i++) {
     if (1.0 <= mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV+nevents_08_10_TeV]/1000 && mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV+nevents_08_10_TeV]/1000 < 1.2){
-      Ecentral_minus_Eprotons_bg_10_12_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV+nevents_08_10_TeV]/1000 - lost_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV+nevents_08_10_TeV], 1);
+      Ecentral_minus_Eprotons_bg_10_12_TeV->Fill(mlnjets_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV+nevents_08_10_TeV]/1000 - rand_proton_energy_vect[i+nevents_00_02_TeV+nevents_02_04_TeV+nevents_04_06_TeV+nevents_06_08_TeV+nevents_08_10_TeV], 1);
     }
   }
   signal_minus_bg->Add(Ecentral_minus_Eprotons_bg, -1);
@@ -489,6 +489,11 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("Ecentral_minus_Eprotons_bg", Ecentral_minus_Eprotons_bg);
   ht.addHist("Eprotons_vs_Ecentral", protons_vs_CM_energy);
   ht.addHist("Eprotons_vs_Ecentral_bg", protons_vs_CM_energy_bg);
+  ht.addHist("Ecentral_minus_Eprotons_bg_00_02_TeV", Ecentral_minus_Eprotons_bg_00_02_TeV);
+  ht.addHist("Ecentral_minus_Eprotons_bg_02_04_TeV", Ecentral_minus_Eprotons_bg_02_04_TeV);
+  ht.addHist("Ecentral_minus_Eprotons_bg_04_06_TeV", Ecentral_minus_Eprotons_bg_04_06_TeV);
+  ht.addHist("Ecentral_minus_Eprotons_bg_06_08_TeV", Ecentral_minus_Eprotons_bg_06_08_TeV);
+  ht.addHist("Ecentral_minus_Eprotons_bg_08_10_TeV", Ecentral_minus_Eprotons_bg_08_10_TeV);
 
   //Write 2D hists to file
   auto output_1 = new TCanvas("Eprotons_vs_Ecentral.root");
