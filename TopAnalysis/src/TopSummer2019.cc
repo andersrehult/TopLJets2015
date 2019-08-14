@@ -83,12 +83,11 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("csi",          new TH1F("csi",         ";#xi = #deltap/p; Events",50,0,0.3) );
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
-  ht.addHist("CM_minus_lost", new TH1F("CM_energy_minus_lost_proton_energy",";difference [TeV]; Events",50,-1,1));
+  //CM energy of ttbar system minus lost proton energy
+  ht.addHist("CM_minus_lost", new TH1F("CM_minus_lost",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_no_neutrino", new TH1F("CM_minus_lost_no_neutrino",";difference [TeV]; Events",50,-1,1));
 
-  ht.addHist("test_2dhist", new TH2F("test_2dhist", "x;y", 50, 0, 1.2, 50, 0, 1.2));  
-
-  //sliced in different energy levels
+  //CM minus lost sliced at different CM energies
   ht.addHist("CM_minus_lost_00_02_TeV", new TH1F("CM_minus_lost_00_02_TeV",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_02_04_TeV", new TH1F("CM_minus_lost_02_04_TeV",";difference [TeV]; Events",50,-1,1));
   ht.addHist("CM_minus_lost_04_06_TeV", new TH1F("CM_minus_lost_04_06_TeV",";difference [TeV]; Events",50,-1,1));
@@ -98,7 +97,7 @@ void RunTopSummer2019(const TString in_fname,
 
   
   TH1F *CM_minus_lost_bg = new TH1F("CM_minus_lost_bg",";difference [TeV]; Events",50,-1,1);
-  TH1F *signal_minus_bg = new TH1F("signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",50,-1,1);
+  TH1F *signal_minus_bg = new TH1F("signal", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
 
   TH1F *CM_minus_lost_bg_00_02_TeV = new TH1F("CM_minus_lost_bg_00_02_TeV",";difference [TeV]; Events",50,-1,1);
   TH1F *CM_minus_lost_bg_02_04_TeV = new TH1F("CM_minus_lost_bg_02_04_TeV",";difference [TeV]; Events",50,-1,1);
@@ -108,15 +107,11 @@ void RunTopSummer2019(const TString in_fname,
   TH1F *CM_minus_lost_bg_10_12_TeV = new TH1F("CM_minus_lost_bg_10_12_TeV",";difference [TeV]; Events",50,-1,1);
 
 
-
-  //TH1F *slices_CM_minus_lost_bg = new TH1F("slices_CM_minus_lost_bg",";difference [TeV]; Events",10,-1,1);
-  //TH1F *slices_signal_minus_bg = new TH1F("slices_signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(signal) - Events(bg)",10,-1,1);
-
-  TH2F *protons_vs_CM_energy = new TH2F("protons_vs_CM_energy", "protons_vs_CM_energy;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
+  TH2F *protons_vs_CM_energy = new TH2F("Eprotons_vs_Ecentral", "Eprotons_vs_Ecentral;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy->SetMarkerStyle(kMultiply);
   protons_vs_CM_energy->SetMarkerColor(9);
   
-  TH2F *protons_vs_CM_energy_bg = new TH2F("protons_vs_CM_energy_bg", "protons_vs_CM_energy_bg;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
+  TH2F *protons_vs_CM_energy_bg = new TH2F("Eprotons_vs_Ecentral_bg", "Eprotons_vs_Ecentral_bg;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
   protons_vs_CM_energy_bg->SetMarkerStyle(kMultiply);
   protons_vs_CM_energy_bg->SetMarkerColor(8);
 
@@ -442,8 +437,6 @@ void RunTopSummer2019(const TString in_fname,
       ht.fill("CM_minus_lost_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
-      //test2d histo histtool
-      ht.fill("test_2dhist", mlnjets/1000, lost_proton_energy);
     }
 
   //Randomize mlnjets_vect, match random CM energies to lost proton energies to
@@ -494,21 +487,21 @@ void RunTopSummer2019(const TString in_fname,
   //Add hists to histtool
   ht.addHist("signal_minus_bg", signal_minus_bg);
   ht.addHist("CM_minus_lost_bg", CM_minus_lost_bg);
-  ht.addHist("protons_vs_CM_energy", protons_vs_CM_energy);
-  ht.addHist("protons_vs_CM_energy_bg", protons_vs_CM_energy_bg);
+  ht.addHist("Eprotons_vs_Ecentral", protons_vs_CM_energy);
+  ht.addHist("Eprotons_vs_Ecentral_bg", protons_vs_CM_energy_bg);
 
   //Write 2D hists to file
-  auto output_1 = new TCanvas("protons_vs_CM_energy.root");
+  auto output_1 = new TCanvas("Eprotons_vs_Ecentral.root");
   protons_vs_CM_energy->Draw();
   linear_line->Draw("Same");  
-  TFile out_protons_vs_CM_energy("protons_vs_CM_energy.root","RECREATE");
+  TFile out_protons_vs_CM_energy("Eprotons_vs_Ecentral.root","RECREATE");
   output_1->Write();
   out_protons_vs_CM_energy.Close();
 
-  auto output_2 = new TCanvas("protons_vs_CM_energy_bg.root");
+  auto output_2 = new TCanvas("Eprotons_vs_Ecentral_bg.root");
   protons_vs_CM_energy_bg->Draw();
   linear_line->Draw("Same");
-  TFile out_protons_vs_CM_energy_bg("protons_vs_CM_energy_bg.root","RECREATE");
+  TFile out_protons_vs_CM_energy_bg("Eprotons_vs_Ecentral_bg.root","RECREATE");
   output_2->Write();
   out_protons_vs_CM_energy_bg.Close();
 
@@ -526,7 +519,4 @@ void RunTopSummer2019(const TString in_fname,
     it.second->SetDirectory(fOut); it.second->Write(); 
   }  
   fOut->Close();
-
-  cout << rand_proton_energy_vect.size() << endl;
-  cout << mlnjets_vect.size() << endl;
 }
