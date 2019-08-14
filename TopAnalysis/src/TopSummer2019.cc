@@ -345,8 +345,8 @@ void RunTopSummer2019(const TString in_fname,
         nprotons03 += (pot_raw_id==03);
         nprotons103 += (pot_raw_id==103);
 	npdiff0 += (pot_raw_id==03);
-	npdiff0 -= (pot_raw_id==103);
-	npdiff1 += (pot_raw_id==23);
+	npdiff0 -= (pot_raw_id==23);
+	npdiff1 += (pot_raw_id==103);
 	npdiff1 -= (pot_raw_id==123);
 
         float xi= (isLowPUrun ? 0.               : ev.fwdtrk_xi[ift]);
