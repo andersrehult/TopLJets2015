@@ -165,18 +165,18 @@ void RunTopSummer2019(const TString in_fname,
   std::vector<float> lost_proton_energy_vect{};
   std::vector<float> rand_proton_energy_vect{};
   //# of events with CM energy in various ranges
-  size_t nevents_00_02_TeV(0);
-  size_t nevents_02_04_TeV(0);
-  size_t nevents_04_06_TeV(0);
-  size_t nevents_06_08_TeV(0);
-  size_t nevents_08_10_TeV(0);
-  size_t nevents_10_12_TeV(0);
-  size_t nevents_00_02_bg_TeV(0);
-  size_t nevents_02_04_bg_TeV(0);
-  size_t nevents_04_06_bg_TeV(0);
-  size_t nevents_06_08_bg_TeV(0);
-  size_t nevents_08_10_bg_TeV(0);  
-  size_t nevents_10_12_bg_TeV(0);
+  float nevents_00_02_TeV(0);
+  float nevents_02_04_TeV(0);
+  float nevents_04_06_TeV(0);
+  float nevents_06_08_TeV(0);
+  float nevents_08_10_TeV(0);
+  float nevents_10_12_TeV(0);
+  float nevents_00_02_bg_TeV(0);
+  float nevents_02_04_bg_TeV(0);
+  float nevents_04_06_bg_TeV(0);
+  float nevents_06_08_bg_TeV(0);
+  float nevents_08_10_bg_TeV(0);  
+  float nevents_10_12_bg_TeV(0);
 
   //Random protons vector
   for (Int_t iev=0;iev<nentries;iev++)
@@ -514,31 +514,37 @@ void RunTopSummer2019(const TString in_fname,
     }
   }
   //Scale bg sliced histo's
-  float nevents_00_02(nevents_00_02_TeV);
-  float nevents_02_04(nevents_02_04_TeV);
-  float nevents_04_06(nevents_04_06_TeV);
-  float nevents_06_08(nevents_06_08_TeV);
-  float nevents_08_10(nevents_08_10_TeV);
-  float nevents_10_12(nevents_10_12_TeV);
-  float nevents_00_02_bg(nevents_00_02_TeV);
-  float nevents_02_04_bg(nevents_02_04_TeV);
-  float nevents_04_06_bg(nevents_04_06_TeV);
-  float nevents_06_08_bg(nevents_06_08_TeV);
-  float nevents_08_10_bg(nevents_08_10_TeV);
-  float nevents_10_12_bg(nevents_10_12_TeV);
+  
+  if(nevents_00_02_bg_TeV!=0 && nevents_00_02_TeV!=0){
+    float scale_00_02(nevents_00_02_TeV/nevents_00_02_bg_TeV);
+    Ecentral_minus_Eprotons_bg_00_02_TeV->Scale(scale_00_02);
+  }
+  if(nevents_02_04_bg_TeV!=0 && nevents_02_04_TeV!=0){
+    float scale_02_04(nevents_02_04_TeV/nevents_02_04_bg_TeV);
+    Ecentral_minus_Eprotons_bg_02_04_TeV->Scale(scale_02_04);
+  }
+  if(nevents_04_06_bg_TeV!=0 && nevents_04_06_TeV!=0){
+    float scale_04_06(nevents_04_06_TeV/nevents_04_06_bg_TeV);
+    Ecentral_minus_Eprotons_bg_04_06_TeV->Scale(scale_04_06);
+  }
+  if(nevents_06_08_bg_TeV!=0 && nevents_06_08_TeV!=0){
+    float scale_06_08(nevents_06_08_TeV/nevents_06_08_bg_TeV);
+    Ecentral_minus_Eprotons_bg_06_08_TeV->Scale(scale_06_08);
+  }
+  if(nevents_08_10_bg_TeV!=0 && nevents_08_10_TeV!=0){
+    float scale_08_10(nevents_08_10_TeV/nevents_08_10_bg_TeV);
+    Ecentral_minus_Eprotons_bg_08_10_TeV->Scale(scale_08_10);
+  }
+  if(nevents_10_12_bg_TeV!=0 && nevents_10_12_TeV!=0){
+    float scale_10_12(nevents_10_12_TeV/nevents_10_12_bg_TeV);
+    Ecentral_minus_Eprotons_bg_10_12_TeV->Scale(scale_10_12);
+  }
 
-  //float scale_00_02(nevents_00_02/nevents_00_02_bg);
-  float scale_02_04(nevents_00_02/nevents_02_04_bg);
-  float scale_04_06(nevents_00_02/nevents_04_06_bg);
-  float scale_06_08(nevents_00_02/nevents_06_08_bg);
-  float scale_08_10(nevents_00_02/nevents_08_10_bg);
-  //float scale_10_12(nevents_00_02/nevents_10_12_bg);
-  //Ecentral_minus_Eprotons_bg_00_02TeV->Scale(scale_00_02);
-  Ecentral_minus_Eprotons_bg_02_04_TeV->Scale(scale_02_04);
-  Ecentral_minus_Eprotons_bg_04_06_TeV->Scale(scale_04_06);
-  Ecentral_minus_Eprotons_bg_06_08_TeV->Scale(scale_06_08);
-  Ecentral_minus_Eprotons_bg_08_10_TeV->Scale(scale_08_10);
-  //Ecentral_minus_Eprotons_bg_10_12_TeV->Scale(scale_10_12);
+  //cout << "float_06_08 = " << nevents_06_08_TeV << endl;
+  //cout << "float_06_08 = " << nevents_06_08 << endl;
+  //cout << "float_06_08_bg = " << nevents_06_08_bg_TeV << endl;
+  //cout << "float_06_08_bg = " << nevents_06_08_bg << endl;
+  //cout << "scale_06_08 = " << scale_06_08 << endl;
 
   //Substract normalised backgrounds from selection
   signal_minus_bg_00_02_TeV->Add(Ecentral_minus_Eprotons_bg_00_02_TeV, -1);
