@@ -234,8 +234,7 @@ void RunTopSummer2019(const TString in_fname,
 	}
 	if (pot_raw_id==123) {
 	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-        }
-	
+        }	
       }
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
@@ -470,10 +469,13 @@ void RunTopSummer2019(const TString in_fname,
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, rand_proton_energy_vect[i]);
   }
   
+  //Scale bg hist to match event hist (Ecentral_minus_Eprotons)
   float lost_size(lost_proton_energy_vect.size());
   float mlnjets_size(mlnjets_vect.size());
   float scale_1(lost_size/mlnjets_size);
   Ecentral_minus_Eprotons_bg->Scale(scale_1);
+  //Normalize signal hist to 1 event
+  signal_minus_bg->Scale(1/signal_minus_bg->Integral());
 
   //fill bg slices
   //for (size_t i=0; i<nevents_00_02_TeV; i++) {
