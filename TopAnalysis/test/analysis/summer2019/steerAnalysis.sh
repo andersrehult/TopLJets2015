@@ -50,7 +50,16 @@ elif [[ ${ERA} = "2017lowpu" ]]; then
     lumi=220
     lumiUnc=0.025
     testtag=Data13TeV_2017H_SingleMuon_v2
-    testfile=${dataeosdir}/${testtag}/MiniEvents_101.root
+    testfile=${dataeosdir}/${testtag}/Chunk_0_ext0.root
+elif [[ ${ERA} = "2017simu" ]]; then
+    ERA=2017
+    githash=ab05162
+    eosdir=/store/cmst3/group/top/RunIIReReco/${githash}
+    dataeosdir=/store/cmst3/group/top/RunIIReReco/ab05162/
+    lumi=220
+    lumiUnc=0.025
+    testtag=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120
+    testfile=${dataeosdir}/${testtag}/Chunk_0_ext0.root
 fi
 
 #run the operation required

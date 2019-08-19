@@ -255,7 +255,7 @@ void RunTopSummer2019(const TString in_fname,
       bool hasMTrigger(false);
       if(era.Contains("2016")) hasMTrigger=(selector.hasTriggerBit("HLT_IsoMu24_v", ev.triggerBits) );     
       if(era.Contains("2017")) {
-        if(isLowPUrun) hasMTrigger=(selector.hasTriggerBit("HLT_HIMu15_v",  ev.addTriggerBits) );   
+        if(isLowPUrun) hasMTrigger=(selector.hasTriggerBit("HLT_HIMu12_v",  ev.addTriggerBits) );   
         else           hasMTrigger=(selector.hasTriggerBit("HLT_IsoMu27_v", ev.triggerBits) );   
       }
       if(!hasMTrigger) continue;
