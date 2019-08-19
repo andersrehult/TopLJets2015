@@ -540,12 +540,6 @@ void RunTopSummer2019(const TString in_fname,
     Ecentral_minus_Eprotons_bg_10_12_TeV->Scale(scale_10_12);
   }
 
-  //cout << "float_06_08 = " << nevents_06_08_TeV << endl;
-  //cout << "float_06_08 = " << nevents_06_08 << endl;
-  //cout << "float_06_08_bg = " << nevents_06_08_bg_TeV << endl;
-  //cout << "float_06_08_bg = " << nevents_06_08_bg << endl;
-  //cout << "scale_06_08 = " << scale_06_08 << endl;
-
   //Substract normalised backgrounds from selection
   signal_minus_bg_00_02_TeV->Add(Ecentral_minus_Eprotons_bg_00_02_TeV, -1);
   signal_minus_bg_02_04_TeV->Add(Ecentral_minus_Eprotons_bg_02_04_TeV, -1);
@@ -566,11 +560,13 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("Ecentral_minus_Eprotons_bg_04_06_TeV", Ecentral_minus_Eprotons_bg_04_06_TeV);
   ht.addHist("Ecentral_minus_Eprotons_bg_06_08_TeV", Ecentral_minus_Eprotons_bg_06_08_TeV);
   ht.addHist("Ecentral_minus_Eprotons_bg_08_10_TeV", Ecentral_minus_Eprotons_bg_08_10_TeV);
+  ht.addHist("Ecentral_minus_Eprotons_bg_10_12_TeV", Ecentral_minus_Eprotons_bg_10_12_TeV);  
   ht.addHist("Ecentral_minus_Eprotons_00_02_TeV", Ecentral_minus_Eprotons_00_02_TeV);
   ht.addHist("Ecentral_minus_Eprotons_02_04_TeV", Ecentral_minus_Eprotons_02_04_TeV);
   ht.addHist("Ecentral_minus_Eprotons_04_06_TeV", Ecentral_minus_Eprotons_04_06_TeV);
   ht.addHist("Ecentral_minus_Eprotons_06_08_TeV", Ecentral_minus_Eprotons_06_08_TeV);
   ht.addHist("Ecentral_minus_Eprotons_08_10_TeV", Ecentral_minus_Eprotons_08_10_TeV);
+  ht.addHist("Ecentral_minus_Eprotons_10_12_TeV", Ecentral_minus_Eprotons_10_12_TeV);
   ht.addHist("signal_minus_bg_00_02_TeV", signal_minus_bg_00_02_TeV);
   ht.addHist("signal_minus_bg_02_04_TeV", signal_minus_bg_02_04_TeV);
   ht.addHist("signal_minus_bg_04_06_TeV", signal_minus_bg_04_06_TeV);
