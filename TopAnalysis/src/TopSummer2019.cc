@@ -88,8 +88,8 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("Ecentral_minus_Eprotons_no_neutrino", new TH1F("Ecentral_minus_Eprotons_no_neutrino",";difference [TeV]; Events",50,-1,1));
 
   //Background and signal plots
-  TH1F *Ecentral_minus_Eprotons_bg = new TH1F("Ecentral_minus_Eprotons_bg",";difference [TeV]; Events",50,-1,1);
-  TH1F *signal_minus_bg = new TH1F("signal", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
+  TH1F *Ecentral_minus_Eprotons_bg = new TH1F("Ecentral_minus_Eprotons_bg",";difference [TeV]; Events(bg)",50,-1,1);
+  TH1F *signal_minus_bg = new TH1F("signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
 
   //CM minus lost sliced at different CM energies
   TH1F *Ecentral_minus_Eprotons_00_02_TeV = new TH1F("Ecentral_minus_Eprotons_00_02_TeV",";difference [TeV]; Events",50,-1,1);
@@ -234,7 +234,8 @@ void RunTopSummer2019(const TString in_fname,
 	}
 	if (pot_raw_id==123) {
 	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-        }	
+        }
+	
       }
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
@@ -460,7 +461,8 @@ void RunTopSummer2019(const TString in_fname,
 
   //Randomize mlnjets_vect, match random CM energies to lost proton energies to
   //simulate background
-  //std::random_shuffle(mlnjets_vect.begin(), mlnjets_vect.end());
+  float lost_size(lost_proton_energy_vect.size());
+  float mlnjets_size(mlnjets_vect.size());
   std::random_shuffle(rand_proton_energy_vect.begin(), rand_proton_energy_vect.end());
   for (size_t i=0; i<mlnjets_vect.size(); i++) {
     //fill 1D difference hist. Convert mlnjets to TeV
@@ -468,14 +470,13 @@ void RunTopSummer2019(const TString in_fname,
     //fill 2D hist. Convert mlnjets to TeV
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, rand_proton_energy_vect[i]);
   }
-  
-  //Scale bg hist to match event hist (Ecentral_minus_Eprotons)
-  float lost_size(lost_proton_energy_vect.size());
-  float mlnjets_size(mlnjets_vect.size());
-  float scale_1(lost_size/mlnjets_size);
-  Ecentral_minus_Eprotons_bg->Scale(scale_1);
-  //Normalize signal hist to 1 event
-  signal_minus_bg->Scale(1/signal_minus_bg->Integral());
+
+  //fill signal_minus_bg histo
+  if (lost_size!=0 && mlnjets_size!=0){
+    float scale_1(lost_size/mlnjets_size);
+    Ecentral_minus_Eprotons_bg->Scale(scale_1);
+    signal_minus_bg->Add(Ecentral_minus_Eprotons_bg, -1); 
+   }
 
   //fill bg slices
   //for (size_t i=0; i<nevents_00_02_TeV; i++) {
@@ -549,8 +550,6 @@ void RunTopSummer2019(const TString in_fname,
   signal_minus_bg_06_08_TeV->Add(Ecentral_minus_Eprotons_bg_06_08_TeV, -1);
   signal_minus_bg_08_10_TeV->Add(Ecentral_minus_Eprotons_bg_08_10_TeV, -1);
   signal_minus_bg_10_12_TeV->Add(Ecentral_minus_Eprotons_bg_10_12_TeV, -1);
-  signal_minus_bg->Add(Ecentral_minus_Eprotons_bg, -1);
-
 
   //Add hists to histtool
   ht.addHist("signal_minus_bg", signal_minus_bg);
