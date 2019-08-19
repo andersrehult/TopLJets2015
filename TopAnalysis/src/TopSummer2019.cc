@@ -474,8 +474,11 @@ void RunTopSummer2019(const TString in_fname,
   //fill signal_minus_bg histo
   if (lost_size!=0 && mlnjets_size!=0){
     float scale_1(lost_size/mlnjets_size);
+    //Scale bg hist to match data hist
     Ecentral_minus_Eprotons_bg->Scale(scale_1);
     signal_minus_bg->Add(Ecentral_minus_Eprotons_bg, -1); 
+    //Normalize signal histogram
+    signal_minus_bg->Scale(1/signal_minus_bg->Integral());
    }
 
   //fill bg slices
