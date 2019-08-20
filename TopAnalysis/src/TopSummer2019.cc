@@ -89,7 +89,7 @@ void RunTopSummer2019(const TString in_fname,
 
   //Background and signal plots
   TH1F *Ecentral_minus_Eprotons_bg = new TH1F("Ecentral_minus_Eprotons_bg",";difference [TeV]; Events(bg)",50,-1,1);
-  TH1F *signal_minus_bg = new TH1F("signal_minus_bg", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
+  TH1F *signal_minus_bg = new TH1F("signal", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
 
   //CM minus lost sliced at different CM energies
   TH1F *Ecentral_minus_Eprotons_00_02_TeV = new TH1F("Ecentral_minus_Eprotons_00_02_TeV",";difference [TeV]; Events",50,-1,1);
@@ -344,7 +344,7 @@ void RunTopSummer2019(const TString in_fname,
       int nprotons03(0), nprotons103(0);
       int npdiff0(0), npdiff1(0);
       int ntrks( isLowPUrun ? ev.nppstrk : ev.nfwdtrk );
-      int v_low_cutoff(25); //change to mean of nvtx.
+      int v_low_cutoff(5); //change to mean of nvtx.
       for (int ift=0; ift<ntrks; ift++) {
 
         //single pot reconstruction
