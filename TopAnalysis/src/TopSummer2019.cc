@@ -11,6 +11,7 @@
 #include "TopLJets2015/TopAnalysis/interface/CommonTools.h"
 #include "TopLJets2015/TopAnalysis/interface/TopSummer2019.h"
 #include "TopLJets2015/TopAnalysis/interface/L1PrefireEfficiencyWrapper.h"
+#include "TopQuarkAnalysis/TopTools/interface/MEzCalculator.h"
 
 #include <vector>
 #include <set>
@@ -178,6 +179,9 @@ void RunTopSummer2019(const TString in_fname,
   float nevents_08_10_bg_TeV(0);  
   float nevents_10_12_bg_TeV(0);
 
+  //Create object used for neutrino reconstruction
+  MEzCalculator neutrinoPzComputer;
+
   //Random protons vector
   for (Int_t iev=0;iev<nentries;iev++)
     {
@@ -271,16 +275,16 @@ void RunTopSummer2019(const TString in_fname,
       std::vector<Jet> allJets = selector.getGoodJets(ev,30.,2.4,leptons,{});
       if(allJets.size()<minJetMultiplicity) continue;
 
-      //met
+      //missing transverse energy
       TLorentzVector met(0,0,0,0);
       met.SetPtEtaPhiM(ev.met_pt,0,ev.met_phi,0.);
 
-      //mlm = missing longitudinal momentum
-      TLorentzVector mlm(0,0,0,0);
-      mlm.SetPxPyPzE(0,0,-leptons[0].Pz(),0);
-
-      //me = missing energy (neutrino energy-momentum 4vector)
-      TLorentzVector me = met + mlm; 
+      neutrinoPzComputer.SetMET(met);
+      neutrinoPzComputer.SetLepton(leptons[0]);
+            
+      //longitudinal momentum of neutrino
+      float nupz = neutrinoPzComputer.Calculate();
+      TLorentzVector neutrino(met.Px(),met.Py(),nupz,TMath::Sqrt(TMath::Power(met.Pt(),2) + TMath::Power(nupz,2)));
 
       //event weight
       float evWgt(1.0);
@@ -329,15 +333,15 @@ void RunTopSummer2019(const TString in_fname,
       ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
 
       //calculate invariant mass of the system
-      TLorentzVector lnjets = leptons[0]+me;
+      TLorentzVector lnjets = leptons[0]+neutrino;
       //prepare variable for no neutrino plot
       float mlnjets_no_neutrino(0);
       for(size_t ij=0; ij<allJets.size(); ij++)
 	{
 	  lnjets+=allJets[ij];
-	  mlnjets = lnjets.M();
-	  mlnjets_no_neutrino = (lnjets-me).M();
 	}
+      mlnjets = lnjets.M();
+      mlnjets_no_neutrino = (lnjets-neutrino).M();
       ht.fill("mlnjets",mlnjets,evWgt,"invariant_mass");
       mlnjets_vect.push_back(mlnjets);
 
@@ -419,7 +423,7 @@ void RunTopSummer2019(const TString in_fname,
       }
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
-      float lost_proton_energy = sqrt(13*xi_23*xi_123);
+      float lost_proton_energy = 13*sqrt(xi_23*xi_123);
       lost_proton_energy_vect.push_back(lost_proton_energy);
       //fill 1D difference hists. Convert mlnjets to TeV
       ht.fill("Ecentral_minus_Eprotons", mlnjets/1000 - lost_proton_energy, 1);
