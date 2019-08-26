@@ -310,22 +310,6 @@ void RunTopSummer2019(const TString in_fname,
         evWgt *= (ev.g_nw>0 ? ev.g_w[0] : 1.0);        
       }
       
-
-      ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
-
-      //calculate invariant mass of the system
-      TLorentzVector lnjets = leptons[0]+me;
-      //prepare variable for no neutrino plot
-      float mlnjets_no_neutrino(0);
-      for(size_t ij=0; ij<allJets.size(); ij++)
-	{
-	  lnjets+=allJets[ij];
-	  mlnjets = lnjets.M();
-	  mlnjets_no_neutrino = (lnjets-me).M();
-	}
-      ht.fill("mlnjets",mlnjets,evWgt,"invariant_mass");
-      mlnjets_vect.push_back(mlnjets);
-
       //select events of 2+ b-tagged jets,
       //calculate invariant mass of lepton-b systems
       int bjets(0);
@@ -341,6 +325,21 @@ void RunTopSummer2019(const TString in_fname,
           ht.fill("mlb",mlb,evWgt,tags);
         }
       if(bjets < 2) continue;
+
+      ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
+
+      //calculate invariant mass of the system
+      TLorentzVector lnjets = leptons[0]+me;
+      //prepare variable for no neutrino plot
+      float mlnjets_no_neutrino(0);
+      for(size_t ij=0; ij<allJets.size(); ij++)
+	{
+	  lnjets+=allJets[ij];
+	  mlnjets = lnjets.M();
+	  mlnjets_no_neutrino = (lnjets-me).M();
+	}
+      ht.fill("mlnjets",mlnjets,evWgt,"invariant_mass");
+      mlnjets_vect.push_back(mlnjets);
 
       //roman pots
       int nprotons23(0), nprotons123(0);
