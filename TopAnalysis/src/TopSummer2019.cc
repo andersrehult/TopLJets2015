@@ -87,6 +87,7 @@ void RunTopSummer2019(const TString in_fname,
   //CM energy of ttbar system minus lost proton energy
   ht.addHist("Ecentral_minus_Eprotons", new TH1F("Ecentral_minus_Eprotons",";difference [TeV]; Events",50,-1,1));
   ht.addHist("Ecentral_minus_Eprotons_no_neutrino", new TH1F("Ecentral_minus_Eprotons_no_neutrino",";difference [TeV]; Events",50,-1,1));
+  ht.addHist("bjets", new TH1F("bjets",";# of b-jets; Events",10,0,10));
 
   //Background and signal plots
   TH1F *Ecentral_minus_Eprotons_bg = new TH1F("Ecentral_minus_Eprotons_bg",";difference [TeV]; Events(bg)",50,-1,1);
@@ -354,6 +355,7 @@ void RunTopSummer2019(const TString in_fname,
           std::vector<TString> tags={"inc",leptons[0].charge()>0 ? "plus" : "minus"};
           ht.fill("mlb",mlb,evWgt,tags);
         }
+      ht.fill("bjets",bjets,1,"");
       if(bjets < 2) continue;
 
       ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
