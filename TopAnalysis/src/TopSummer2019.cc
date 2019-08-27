@@ -188,6 +188,32 @@ void RunTopSummer2019(const TString in_fname,
       t->GetEntry(iev);
       //if(iev%1000==0) { printf("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries); fflush(stdout); }
 
+      /* SELECT FOR EVENTS CONTAINING THE SAME DECAY PRODUCTS AS OUR TARGET EVENT
+      //select one offline muon
+      std::vector<Particle> leptons = selector.flaggedLeptons(ev);     
+      leptons = selector.selLeptons(leptons,SelectionTool::TIGHT,SelectionTool::MVA90,minLeptonPt,2.1);
+      if(leptons.size()!=1) continue;
+      if(leptons[0].id()!=13) continue;
+
+      //select jets
+      btvSF.addBTagDecisions(ev);
+      if(!ev.isData) btvSF.updateBTagDecisions(ev);
+      std::vector<Jet> allJets = selector.getGoodJets(ev,30.,2.4,leptons,{});
+      if(allJets.size()<minJetMultiplicity) continue;
+
+      //select events of 2+ b-tagged jets,
+      int bjets(0);
+      for(size_t ij=0; ij<allJets.size(); ij++) 
+        {
+          int idx=allJets[ij].getJetIndex();
+          bool passBtag(ev.j_btag[idx]>0);
+          if(!passBtag) continue;
+	  bjets++;
+	}
+      if(bjets < 2) continue;
+      */
+
+      
       //roman pots
       int nprotons23(0), nprotons123(0);
       int nprotons03(0), nprotons103(0);
