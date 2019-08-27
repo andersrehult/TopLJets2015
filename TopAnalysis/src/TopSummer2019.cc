@@ -189,7 +189,7 @@ void RunTopSummer2019(const TString in_fname,
       t->GetEntry(iev);
       //if(iev%1000==0) { printf("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries); fflush(stdout); }
 
-      /* SELECT FOR EVENTS CONTAINING THE SAME DECAY PRODUCTS AS OUR TARGET EVENT
+      //SELECT FOR EVENTS CONTAINING THE SAME DECAY PRODUCTS AS OUR TARGET EVENT
       //select one offline muon
       std::vector<Particle> leptons = selector.flaggedLeptons(ev);     
       leptons = selector.selLeptons(leptons,SelectionTool::TIGHT,SelectionTool::MVA90,minLeptonPt,2.1);
@@ -212,9 +212,7 @@ void RunTopSummer2019(const TString in_fname,
 	  bjets++;
 	}
       if(bjets < 2) continue;
-      */
-
-      
+       
       //roman pots
       int nprotons23(0), nprotons123(0);
       int nprotons03(0), nprotons103(0);
@@ -460,42 +458,43 @@ void RunTopSummer2019(const TString in_fname,
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
       float lost_proton_energy = 13*sqrt(xi_23*xi_123);
+      float offset = 0.06766;
       lost_proton_energy_vect.push_back(lost_proton_energy);
-      //fill 1D difference hists. Convert mlnjets to TeV
-      ht.fill("Ecentral_minus_Eprotons", mlnjets/1000 - lost_proton_energy, 1);
+      //fill 1D difference hists with offset from the FPMC simulation data. Convert mlnjets to TeV
+      ht.fill("Ecentral_minus_Eprotons", mlnjets/1000 - lost_proton_energy + offset, 1);
       //fill slices
       if (0.0 <= mlnjets/1000 && mlnjets/1000 < 0.2){
-	Ecentral_minus_Eprotons_00_02_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
-	signal_00_02_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
+	Ecentral_minus_Eprotons_00_02_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
+	signal_00_02_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
 	nevents_00_02_TeV++;
       }
       else if (0.2 <= mlnjets/1000 && mlnjets/1000 < 0.4) {
-	Ecentral_minus_Eprotons_02_04_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
-	signal_02_04_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
+	Ecentral_minus_Eprotons_02_04_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
+	signal_02_04_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
 	nevents_02_04_TeV++;
       }
       else if (0.4 <= mlnjets/1000 && mlnjets/1000 < 0.6) {
-        Ecentral_minus_Eprotons_04_06_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
-	signal_04_06_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
+        Ecentral_minus_Eprotons_04_06_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
+	signal_04_06_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
 	nevents_04_06_TeV++;
       }
       else if (0.6 <= mlnjets/1000 && mlnjets/1000 < 0.8) {
-	Ecentral_minus_Eprotons_06_08_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
-	signal_06_08_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
+	Ecentral_minus_Eprotons_06_08_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
+	signal_06_08_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
 	nevents_06_08_TeV++;
       }
       else if (0.8 <= mlnjets/1000 && mlnjets/1000 < 1.0) {
-	Ecentral_minus_Eprotons_08_10_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
-	signal_08_10_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
+	Ecentral_minus_Eprotons_08_10_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
+	signal_08_10_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
 	nevents_08_10_TeV++;
       }
       else if (1.0 <= mlnjets/1000 && mlnjets/1000 < 1.2) {
-	Ecentral_minus_Eprotons_10_12_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
-	signal_10_12_TeV->Fill(mlnjets/1000 - lost_proton_energy, 1);
+	Ecentral_minus_Eprotons_10_12_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
+	signal_10_12_TeV->Fill(mlnjets/1000 - lost_proton_energy + offset, 1);
 	nevents_10_12_TeV++;
       }
 
-      signal->Fill(mlnjets/1000 - lost_proton_energy);
+      signal->Fill(mlnjets/1000 - lost_proton_energy + offset);
       ht.fill("Ecentral_minus_Eprotons_no_neutrino", mlnjets_no_neutrino/1000 - lost_proton_energy, 1, "");
       //fill 2D hist. Convert mlnjets to TeV
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
