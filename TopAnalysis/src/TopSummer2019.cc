@@ -300,6 +300,8 @@ void RunTopSummer2019(const TString in_fname,
       btvSF.addBTagDecisions(ev);
       if(!ev.isData) btvSF.updateBTagDecisions(ev);      
       std::vector<Jet> allJets = selector.getGoodJets(ev,30.,2.4,leptons,{});
+      std::vector<Jet> bJets({});
+      std::vector<Jet> nonbJets({});
       if(allJets.size()<minJetMultiplicity) continue;
 
       //missing transverse energy
@@ -343,20 +345,23 @@ void RunTopSummer2019(const TString in_fname,
       
       //select events of 2+ b-tagged jets,
       //calculate invariant mass of lepton-b systems
-      int bjets(0);
       for(size_t ij=0; ij<allJets.size(); ij++) 
         {
           int idx=allJets[ij].getJetIndex();
           bool passBtag(ev.j_btag[idx]>0);
-          if(!passBtag) continue;
-	  bjets++;
+	  if (!passBtag) {
+	    nonbJets.push_back(allJets[ij]);
+	    continue;
+	  }
+	  bJets.push_back(allJets[ij]);
 
           float mlb( (leptons[0]+allJets[ij]).M() );
           std::vector<TString> tags={"inc",leptons[0].charge()>0 ? "plus" : "minus"};
           ht.fill("mlb",mlb,evWgt,tags);
         }
-      ht.fill("bjets",bjets,1,"");
-      if(bjets < 2) continue;
+      ht.fill("bjets",bJets.size(),1,"");
+      if(bJets.size() < 2) continue;
+      if(nonbJets.size() < 2) continue;
 
       ht.fill("nvtx",       ev.nvtx,        evWgt, "inc");
 
@@ -364,10 +369,13 @@ void RunTopSummer2019(const TString in_fname,
       TLorentzVector lnjets = leptons[0]+neutrino;
       //prepare variable for no neutrino plot
       float mlnjets_no_neutrino(0);
-      for(size_t ij=0; ij<allJets.size(); ij++)
-	{
-	  lnjets+=allJets[ij];
-	}
+
+      //use only the two most highly energetic (first in vector) b-jets and non-b-jets
+      lnjets+=bJets[0];
+      lnjets+=bJets[1];
+      lnjets+=nonbJets[0];
+      lnjets+=nonbJets[1];
+      
       mlnjets = lnjets.M();
       mlnjets_no_neutrino = (lnjets-neutrino).M();
       ht.fill("mlnjets",mlnjets,evWgt,"invariant_mass");
