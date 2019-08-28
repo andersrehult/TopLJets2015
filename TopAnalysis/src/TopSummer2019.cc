@@ -268,7 +268,7 @@ void RunTopSummer2019(const TString in_fname,
       }
       //calculate proton energy according to P.Meiring's Eq. (9)
       //assuming 13 TeV collisions. Unit: TeV
-      float rand_proton_energy = sqrt(13*xi_23*xi_123);
+      float rand_proton_energy = 13*sqrt(xi_23*xi_123);
       rand_proton_energy_vect.push_back(rand_proton_energy);
     }
 
