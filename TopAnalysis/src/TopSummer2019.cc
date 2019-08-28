@@ -186,95 +186,6 @@ void RunTopSummer2019(const TString in_fname,
   //Create object used for neutrino reconstruction
   MEzCalculator neutrinoPzComputer;
 
-  //Random protons vector
-  for (Int_t iev=0;iev<nentries;iev++)
-    {
-      t->GetEntry(iev);
-      //if(iev%1000==0) { printf("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries); fflush(stdout); }
-
-      //SELECT FOR EVENTS CONTAINING THE SAME DECAY PRODUCTS AS OUR TARGET EVENT
-      //select one offline muon
-      std::vector<Particle> leptons = selector.flaggedLeptons(ev);     
-      leptons = selector.selLeptons(leptons,SelectionTool::TIGHT,SelectionTool::MVA90,minLeptonPt,2.1);
-      if(leptons.size()!=1) continue;
-      if(leptons[0].id()!=13) continue;
-
-      //select jets
-      btvSF.addBTagDecisions(ev);
-      if(!ev.isData) btvSF.updateBTagDecisions(ev);
-      std::vector<Jet> allJets = selector.getGoodJets(ev,30.,2.4,leptons,{});
-      if(allJets.size()<minJetMultiplicity) continue;
-
-      //select events of 2+ b-tagged jets,
-      int bjets(0);
-      for(size_t ij=0; ij<allJets.size(); ij++) 
-        {
-          int idx=allJets[ij].getJetIndex();
-          bool passBtag(ev.j_btag[idx]>0);
-          if(!passBtag) continue;
-	  bjets++;
-	}
-      if(bjets < 2) continue;
-       
-      //roman pots
-      int nprotons23(0), nprotons123(0);
-      int nprotons03(0), nprotons103(0);
-      int ntrks( isLowPUrun ? ev.nppstrk : ev.nfwdtrk );
-      for (int ift=0; ift<ntrks; ift++) {
-
-        //single pot reconstruction
-        if(!isLowPUrun && ev.fwdtrk_method[ift]!=0) continue;
-
-        //only near (pixels) detectors
-        const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
-        if (pot_raw_id!=23 && pot_raw_id!=123 && pot_raw_id!=03 && pot_raw_id!=103) continue;            
-        //count nr of protons in each pot  
-        nprotons23 += (pot_raw_id==23);
-        nprotons123 += (pot_raw_id==123);
-        nprotons03 += (pot_raw_id==03);
-        nprotons103 += (pot_raw_id==103);
-      }
- 
-      //proton energy loss
-      float nrp23(0);
-      float nrp123(0);
-      //loop over forward trackers to store the number of protons in the
-      //two RP:s we're considering
-      for (int ift=0; ift<ntrks; ift++) {
-        //only near (pixels) detectors
-	const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
-        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
-	
-	nrp23 += (pot_raw_id==23);
-	nrp123 += (pot_raw_id==123);
-	
-      }
-      
-      //select events where one proton is captured by each RP
-      if (nrp23!=1) continue;
-      if (nrp123!=1) continue;
-      //store xi for each RP
-      float xi_23(0);
-      float xi_123(0);
-      for (int ift=0; ift<ntrks; ift++) {
-	
-        //only near (pixels) detectors
-        const unsigned short pot_raw_id = (isLowPUrun ? ev.ppstrk_pot[ift] : ev.fwdtrk_pot[ift]);
-        if (pot_raw_id!=23 && pot_raw_id!=123) continue;
-	if (pot_raw_id==23) {
-	  xi_23 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-	}
-	if (pot_raw_id==123) {
-	  xi_123 = (isLowPUrun ? 0. : ev.fwdtrk_xi[ift]);
-        }
-	
-      }
-      //calculate proton energy according to P.Meiring's Eq. (9)
-      //assuming 13 TeV collisions. Unit: TeV
-      float rand_proton_energy = 13*sqrt(xi_23*xi_123);
-      rand_proton_energy_vect.push_back(rand_proton_energy);
-    }
-
   //EVENT LOOP
   //select mu+>=4 jets (of which 2+ are b-jets) events triggered by a single muon trigger 
   for (Int_t iev=0;iev<nentries;iev++)
@@ -504,6 +415,7 @@ void RunTopSummer2019(const TString in_fname,
 
   //Randomize mlnjets_vect, match random CM energies to lost proton energies to
   //simulate background
+  rand_proton_energy_vect = lost_proton_energy_vect;
   float lost_size(lost_proton_energy_vect.size());
   float mlnjets_size(mlnjets_vect.size());
   std::random_shuffle(rand_proton_energy_vect.begin(), rand_proton_energy_vect.end());
