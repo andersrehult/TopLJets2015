@@ -413,15 +413,16 @@ void RunTopSummer2019(const TString in_fname,
       protons_vs_CM_energy->Fill(mlnjets/1000, lost_proton_energy);
     }
 
-  //Randomize mlnjets_vect, match random CM energies to lost proton energies to
+  //Randomize proton vector, match CM energies to random lost proton energies to
   //simulate background
   rand_proton_energy_vect = lost_proton_energy_vect;
   float lost_size(lost_proton_energy_vect.size());
   float mlnjets_size(mlnjets_vect.size());
   std::random_shuffle(rand_proton_energy_vect.begin(), rand_proton_energy_vect.end());
-  for (size_t i=0; i<mlnjets_vect.size(); i++) {
+  for (size_t i=0; i<rand_proton_energy_vect.size(); i++) {
     //fill 1D difference hist. Convert mlnjets to TeV
     Ecentral_minus_Eprotons_bg->Fill(((mlnjets_vect[i]/1000) - rand_proton_energy_vect[i]), 1);
+    cout << "rand_proton_energy_vect[i] = " << rand_proton_energy_vect[i] << endl;
     //fill 2D hist. Convert mlnjets to TeV
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, rand_proton_energy_vect[i]);
   }
