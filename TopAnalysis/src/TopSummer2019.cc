@@ -422,7 +422,6 @@ void RunTopSummer2019(const TString in_fname,
   for (size_t i=0; i<rand_proton_energy_vect.size(); i++) {
     //fill 1D difference hist. Convert mlnjets to TeV
     Ecentral_minus_Eprotons_bg->Fill(((mlnjets_vect[i]/1000) - rand_proton_energy_vect[i]), 1);
-    cout << "rand_proton_energy_vect[i] = " << rand_proton_energy_vect[i] << endl;
     //fill 2D hist. Convert mlnjets to TeV
     protons_vs_CM_energy_bg->Fill(mlnjets_vect[i]/1000, rand_proton_energy_vect[i]);
   }
@@ -534,9 +533,9 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("signal_08_10_TeV", signal_08_10_TeV);
   ht.addHist("signal_10_12_TeV", signal_10_12_TeV);
 
-  cout << "lost = " <<  lost_proton_energy_vect.size() << endl;
-  cout << "rand = " << rand_proton_energy_vect.size() << endl;
-  cout << "mlnjets = " << mlnjets_vect.size() << endl;
+  cout << "lost_proton_energy_vect.size(): " <<  lost_proton_energy_vect.size() << endl;
+  cout << "rand_proton_energy_vect.size(): " << rand_proton_energy_vect.size() << endl;
+  cout << "mlnjets_vect.size(): " << mlnjets_vect.size() << endl;
 
   //Write 2D hists to file
   auto output_1 = new TCanvas("Eprotons_vs_Ecentral.root");
