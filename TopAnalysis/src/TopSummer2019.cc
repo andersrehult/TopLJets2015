@@ -439,7 +439,7 @@ void RunTopSummer2019(const TString in_fname,
 
   //fill bg slices
   //for (size_t i=0; i<nevents_00_02_TeV; i++) {
-  for (size_t i=0; i<mlnjets_size; i++) {
+  for (size_t i=0; i<rand_proton_energy_vect.size(); i++) {
     if (0.0 <= mlnjets_vect[i]/1000 && mlnjets_vect[i]/1000 < 0.2){
       Ecentral_minus_Eprotons_bg_00_02_TeV->Fill(mlnjets_vect[i]/1000 - rand_proton_energy_vect[i], 1);
       nevents_00_02_bg_TeV++;
