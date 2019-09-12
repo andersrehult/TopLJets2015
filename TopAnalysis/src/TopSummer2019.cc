@@ -85,37 +85,37 @@ void RunTopSummer2019(const TString in_fname,
   ht.addHist("x",            new TH1F("x",           ";x  [cm]; Events",50,0,25) );
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
   //CM energy of ttbar system minus lost proton energy
-  ht.addHist("Ecentral_minus_Eprotons", new TH1F("Ecentral_minus_Eprotons",";difference [TeV]; Events",50,-2,2));
+  ht.addHist("Ecentral_minus_Eprotons", new TH1F("Ecentral_minus_Eprotons",";difference [TeV]; Events",50,-3,3));
   ht.addHist("Ecentral_minus_Eprotons_no_neutrino", new TH1F("Ecentral_minus_Eprotons_no_neutrino",";difference [TeV]; Events",50,-2,2));
   ht.addHist("bjets", new TH1F("bjets",";# of b-jets; Events",10,0,10));
 
   //Background and signal plots
-  TH1F *Ecentral_minus_Eprotons_bg = new TH1F("Ecentral_minus_Eprotons_bg",";difference [TeV]; Events(bg)",50,-2,2);
-  TH1F *signal = new TH1F("signal", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-2,2);
+  TH1F *Ecentral_minus_Eprotons_bg = new TH1F("Ecentral_minus_Eprotons_bg",";difference [TeV]; Events(bg)",50,-3,3);
+  TH1F *signal = new TH1F("signal", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
 
   //CM minus lost sliced at different CM energies
-  TH1F *Ecentral_minus_Eprotons_00_02_TeV = new TH1F("Ecentral_minus_Eprotons_00_02_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_02_04_TeV = new TH1F("Ecentral_minus_Eprotons_02_04_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_04_06_TeV = new TH1F("Ecentral_minus_Eprotons_04_06_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_06_08_TeV = new TH1F("Ecentral_minus_Eprotons_06_08_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_08_10_TeV = new TH1F("Ecentral_minus_Eprotons_08_10_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_10_12_TeV = new TH1F("Ecentral_minus_Eprotons_10_12_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *Ecentral_minus_Eprotons_00_02_TeV = new TH1F("Ecentral_minus_Eprotons_00_02_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_02_04_TeV = new TH1F("Ecentral_minus_Eprotons_02_04_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_04_06_TeV = new TH1F("Ecentral_minus_Eprotons_04_06_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_06_08_TeV = new TH1F("Ecentral_minus_Eprotons_06_08_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_08_10_TeV = new TH1F("Ecentral_minus_Eprotons_08_10_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_10_12_TeV = new TH1F("Ecentral_minus_Eprotons_10_12_TeV",";difference [TeV]; Events",50,-3,3);
 
   //Background sliced at different CM energies
-  TH1F *Ecentral_minus_Eprotons_bg_00_02_TeV = new TH1F("Ecentral_minus_Eprotons_bg_00_02_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_bg_02_04_TeV = new TH1F("Ecentral_minus_Eprotons_bg_02_04_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_bg_04_06_TeV = new TH1F("Ecentral_minus_Eprotons_bg_04_06_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_bg_06_08_TeV = new TH1F("Ecentral_minus_Eprotons_bg_06_08_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_bg_08_10_TeV = new TH1F("Ecentral_minus_Eprotons_bg_08_10_TeV",";difference [TeV]; Events",50,-1,1);
-  TH1F *Ecentral_minus_Eprotons_bg_10_12_TeV = new TH1F("Ecentral_minus_Eprotons_bg_10_12_TeV",";difference [TeV]; Events",50,-1,1);
+  TH1F *Ecentral_minus_Eprotons_bg_00_02_TeV = new TH1F("Ecentral_minus_Eprotons_bg_00_02_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_bg_02_04_TeV = new TH1F("Ecentral_minus_Eprotons_bg_02_04_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_bg_04_06_TeV = new TH1F("Ecentral_minus_Eprotons_bg_04_06_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_bg_06_08_TeV = new TH1F("Ecentral_minus_Eprotons_bg_06_08_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_bg_08_10_TeV = new TH1F("Ecentral_minus_Eprotons_bg_08_10_TeV",";difference [TeV]; Events",50,-3,3);
+  TH1F *Ecentral_minus_Eprotons_bg_10_12_TeV = new TH1F("Ecentral_minus_Eprotons_bg_10_12_TeV",";difference [TeV]; Events",50,-3,3);
 
   //Signal plot sliced at different CM energies
-  TH1F *signal_00_02_TeV = new TH1F("signal_00_02_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
-  TH1F *signal_02_04_TeV = new TH1F("signal_02_04_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
-  TH1F *signal_04_06_TeV = new TH1F("signal_04_06_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
-  TH1F *signal_06_08_TeV = new TH1F("signal_06_08_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
-  TH1F *signal_08_10_TeV = new TH1F("signal_08_10_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
-  TH1F *signal_10_12_TeV = new TH1F("signal_10_12_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-1,1);
+  TH1F *signal_00_02_TeV = new TH1F("signal_00_02_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
+  TH1F *signal_02_04_TeV = new TH1F("signal_02_04_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
+  TH1F *signal_04_06_TeV = new TH1F("signal_04_06_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
+  TH1F *signal_06_08_TeV = new TH1F("signal_06_08_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
+  TH1F *signal_08_10_TeV = new TH1F("signal_08_10_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
+  TH1F *signal_10_12_TeV = new TH1F("signal_10_12_TeV", ";CM energy - lost proton energy [TeV]; Events(data) - Events(bg)",50,-3,3);
 
   //2D histo's of CoM vs proton energy for selection and backhground
   TH2F *protons_vs_CM_energy = new TH2F("Eprotons_vs_Ecentral", "Eprotons_vs_Ecentral;CoM_energy;Proton_loss_energy", 50,0,1.2,50,0,1.2);
